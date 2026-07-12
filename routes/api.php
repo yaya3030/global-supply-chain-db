@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\RESTCountriesController;
 use App\Http\Controllers\Api\ExchangeRateController; 
 use App\Http\Controllers\Api\GNewsController;
 use App\Http\Controllers\Api\WorldPortIndexController;
+use App\Http\Controllers\GlobalCountryDashboardController;
 
 // Hanya aktifkan rute yang Controller-nya sudah kita buat dan pasti ada filenya
 Route::get('/weather', [WeatherController::class, 'getWeather']);
@@ -15,3 +16,4 @@ Route::get('/country-details', [RESTCountriesController::class, 'getCountryDetai
 Route::get('/exchange-rate', [ExchangeRateController::class, 'getExchangeRate']);
 Route::get('/logistics-news', [GNewsController::class, 'getLogisticsNews']); 
 Route::get('/port-index', [WorldPortIndexController::class, 'getPortDetails']);
+Route::get('/countries-summary', [GlobalCountryDashboardController::class, 'getApiData']);
