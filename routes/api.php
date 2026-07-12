@@ -11,6 +11,7 @@ use App\Http\Controllers\GlobalCountryDashboardController;
 use App\Http\Controllers\Api\RiskScoringController;
 use App\Http\Controllers\Api\GlobalWeatherController;
 use App\Http\Controllers\Api\CurrencyImpactController;
+use App\Http\Controllers\Api\NewsIntelligenceController;
 
 
 // Modul Tahap 2: Integrasi API Eksternal
@@ -25,4 +26,5 @@ Route::get('/port-index', [WorldPortIndexController::class, 'getPortDetails']);
 Route::get('/countries-summary', [GlobalCountryDashboardController::class, 'getApiData']);
 Route::get('/risk-scoring', [RiskScoringController::class, 'getRiskScores']);
 Route::get('/global-weather-status', [GlobalWeatherController::class, 'getWeatherStatus']);
-Route::get('/currency-impact-analysis', [CurrencyImpactController::class, 'getImpactAnalysis']); // <-- Endpoint Baru
+Route::get('/currency-impact-analysis', [CurrencyImpactController::class, 'getImpactAnalysis']);
+Route::get('/news-intelligence', [NewsIntelligenceController::class, 'getNewsAnalytics']); // <-- Endpoint Baru
