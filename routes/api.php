@@ -1,17 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+// Import Controller API
 use App\Http\Controllers\Api\WeatherController;
 use App\Http\Controllers\Api\WorldBankController;
 use App\Http\Controllers\Api\RESTCountriesController;
 use App\Http\Controllers\Api\ExchangeRateController;
 use App\Http\Controllers\Api\GNewsController;
 use App\Http\Controllers\Api\WorldPortIndexController;
-use App\Http\Controllers\GlobalCountryDashboardController;
 use App\Http\Controllers\Api\RiskScoringController;
 use App\Http\Controllers\Api\GlobalWeatherController;
 use App\Http\Controllers\Api\CurrencyImpactController;
 use App\Http\Controllers\Api\NewsIntelligenceController;
+use App\Http\Controllers\Api\PortLocationController;
+use App\Http\Controllers\Api\DataVisualizationController;
+use App\Http\Controllers\Api\CountryComparisonController;
+use App\Http\Controllers\Api\FavoriteMonitoringController;
+use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\RiskAnalysisController;
+use App\Http\Controllers\DashboardController;
+
+// Import Controller Web (Khusus untuk beberapa API yang dipanggil dari Dashboard)
+use App\Http\Controllers\GlobalCountryDashboardController;
 
 
 // Modul Tahap 2: Integrasi API Eksternal
@@ -27,4 +38,15 @@ Route::get('/countries-summary', [GlobalCountryDashboardController::class, 'getA
 Route::get('/risk-scoring', [RiskScoringController::class, 'getRiskScores']);
 Route::get('/global-weather-status', [GlobalWeatherController::class, 'getWeatherStatus']);
 Route::get('/currency-impact-analysis', [CurrencyImpactController::class, 'getImpactAnalysis']);
-Route::get('/news-intelligence', [NewsIntelligenceController::class, 'getNewsAnalytics']); // <-- Endpoint Baru
+Route::get('/news-intelligence', [NewsIntelligenceController::class, 'getNewsAnalytics']);
+Route::get('/port-locations', [PortLocationController::class, 'getLocations']);
+Route::get('/data-visualization-metrics', [DataVisualizationController::class, 'getMetrics']);
+Route::get('/country-comparison-data', [CountryComparisonController::class, 'getComparisonMetrics']);
+Route::get('/favorite-monitoring', [FavoriteMonitoringController::class, 'getFavorites']);
+Route::get('/admin-stats', [AdminDashboardController::class, 'getStats']);
+Route::get('/dashboard-summary', [App\Http\Controllers\DashboardStatsController::class, 'getDashboardSummary']);
+Route::get('/dashboard/country-data', [DashboardController::class, 'countryData']);
+
+
+// Modul Tahap 4: Risk Analysis (Wajib gunakan POST)
+Route::post('/analyze-risk', [RiskAnalysisController::class, 'analyze']);
