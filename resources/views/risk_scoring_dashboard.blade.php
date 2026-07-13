@@ -58,9 +58,13 @@
         </div>
     </div>
 
-    <!-- Skrip AJAX untuk Menembak REST API Internal & Menggambar Grafik -->
+    <!-- Skrip AJAX untuk Menembak REST API Internal & Menggambar Grafik + REALTIME POLLING -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/dashboard-realtime-helper.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let riskComparisonChart = null;
+
+        function fetchAndUpdateRiskData() {
             fetch('/api/risk-scoring')
                 .then(response => response.json())
                 .then(data => {
@@ -89,43 +93,67 @@
                             `;
                         });
 
-                        document.getElementById('risk-table-body').innerHTML = tableRowsHtml;
+                        // Update table dengan smooth transition
+                        const tbody = document.getElementById('risk-table-body');
+                        tbody.style.opacity = '0.7';
+                        setTimeout(() => {
+                            tbody.innerHTML = tableRowsHtml;
+                            tbody.style.opacity = '1';
+                        }, 100);
 
-                        // Menggambar Grafik Chart.js
-                        const ctx = document.getElementById('riskComparisonChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: countriesLabels,
-                                datasets: [{
-                                    label: 'Skor Risiko Total',
-                                    data: scoresData,
-                                    backgroundColor: 'rgba(220, 53, 69, 0.6)',
-                                    borderColor: 'rgba(220, 53, 69, 1)',
-                                    borderWidth: 2,
-                                    borderRadius: 5
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        max: 100
+                        // Update atau buat chart
+                        if (!riskComparisonChart) {
+                            const ctx = document.getElementById('riskComparisonChart').getContext('2d');
+                            riskComparisonChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: countriesLabels,
+                                    datasets: [{
+                                        label: 'Skor Risiko Total',
+                                        data: scoresData,
+                                        backgroundColor: 'rgba(220, 53, 69, 0.6)',
+                                        borderColor: 'rgba(220, 53, 69, 1)',
+                                        borderWidth: 2,
+                                        borderRadius: 5
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            max: 100
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            // Update chart dengan smooth animation
+                            riskComparisonChart.data.labels = countriesLabels;
+                            riskComparisonChart.data.datasets[0].data = scoresData;
+                            riskComparisonChart.update('active');
+                        }
                     }
                 })
                 .catch(error => {
-                    console.error("Error Engine:", error);
-                    document.getElementById('risk-table-body').innerHTML = `
+                    console.error("❌ Risk Scoring Error:", error);
+                    const tbody = document.getElementById('risk-table-body');
+                    tbody.innerHTML = `
                         <tr>
                             <td colspan="5" class="text-center text-danger py-4">Gagal mengkalkulasi matriks risiko.</td>
                         </tr>
                     `;
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch immediately
+            fetchAndUpdateRiskData();
+
+            // Then setup realtime polling setiap 5 detik
+            setInterval(fetchAndUpdateRiskData, 5000);
+            
+            console.log('✅ Risk Scoring Dashboard - Realtime polling started (5s interval)');
         });
     </script>
 </body>

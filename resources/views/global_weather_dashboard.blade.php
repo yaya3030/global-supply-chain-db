@@ -47,9 +47,9 @@
         </div>
     </div>
 
-    <!-- Skrip AJAX untuk Menembak REST API Internal & Mengisi Tabel Dinamis -->
+    <!-- Skrip AJAX untuk Menembak REST API Internal & Mengisi Tabel Dinamis + REALTIME POLLING -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function fetchAndUpdateWeather() {
             fetch('/api/global-weather-status')
                 .then(response => response.json())
                 .then(result => {
@@ -76,17 +76,32 @@
                             `;
                         });
 
-                        document.getElementById('weather-table-body').innerHTML = rowsHtml;
+                        const tbody = document.getElementById('weather-table-body');
+                        tbody.style.opacity = '0.7';
+                        setTimeout(() => {
+                            tbody.innerHTML = rowsHtml;
+                            tbody.style.opacity = '1';
+                        }, 100);
                     }
                 })
                 .catch(error => {
-                    console.error("Weather Engine Error:", error);
+                    console.error("❌ Weather Engine Error:", error);
                     document.getElementById('weather-table-body').innerHTML = `
                         <tr>
                             <td colspan="7" class="text-center text-danger py-4">Gagal memindai stasiun cuaca maritim global.</td>
                         </tr>
                     `;
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch immediately
+            fetchAndUpdateWeather();
+
+            // Then setup realtime polling setiap 5 detik
+            setInterval(fetchAndUpdateWeather, 5000);
+            
+            console.log('✅ Global Weather Dashboard - Realtime polling started (5s interval)');
         });
     </script>
 </body>

@@ -58,9 +58,11 @@
         </div>
     </div>
 
-    <!-- Skrip AJAX untuk Fetch REST API Internal & Menggambar Grafik -->
+    <!-- Skrip AJAX untuk Fetch REST API Internal & Menggambar Grafik + REALTIME POLLING -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let currencyChart = null;
+
+        function fetchAndUpdateCurrency() {
             fetch('/api/currency-impact-analysis')
                 .then(response => response.json())
                 .then(data => {
@@ -89,44 +91,65 @@
                             `;
                         });
 
-                        document.getElementById('currency-table-body').innerHTML = tableRowsHtml;
+                        const tbody = document.getElementById('currency-table-body');
+                        tbody.style.opacity = '0.7';
+                        setTimeout(() => {
+                            tbody.innerHTML = tableRowsHtml;
+                            tbody.style.opacity = '1';
+                        }, 100);
 
-                        // Menggambar Grafik Horizontal Bar Chart menggunakan Chart.js
-                        const ctx = document.getElementById('currencyChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: 'Skor Risiko Finansial',
-                                    data: riskScores,
-                                    backgroundColor: 'rgba(255, 193, 7, 0.6)',
-                                    borderColor: 'rgba(255, 193, 7, 1)',
-                                    borderWidth: 2,
-                                    borderRadius: 5
-                                }]
-                            },
-                            options: {
-                                indexAxis: 'y', // Membuat bar chart menjadi horizontal
-                                responsive: true,
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        max: 100
+                        // Update atau buat chart
+                        if (!currencyChart) {
+                            const ctx = document.getElementById('currencyChart').getContext('2d');
+                            currencyChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Skor Risiko Finansial',
+                                        data: riskScores,
+                                        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                                        borderColor: 'rgba(255, 193, 7, 1)',
+                                        borderWidth: 2,
+                                        borderRadius: 5
+                                    }]
+                                },
+                                options: {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    scales: {
+                                        x: {
+                                            beginAtZero: true,
+                                            max: 100
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            currencyChart.data.labels = labels;
+                            currencyChart.data.datasets[0].data = riskScores;
+                            currencyChart.update('active');
+                        }
                     }
                 })
                 .catch(error => {
-                    console.error("Currency Engine Error:", error);
+                    console.error("❌ Currency Engine Error:", error);
                     document.getElementById('currency-table-body').innerHTML = `
                         <tr>
                             <td colspan="5" class="text-center text-danger py-4">Gagal memproses data dampak mata uang.</td>
                         </tr>
                     `;
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch immediately
+            fetchAndUpdateCurrency();
+
+            // Then setup realtime polling setiap 5 detik
+            setInterval(fetchAndUpdateCurrency, 5000);
+            
+            console.log('✅ Currency Impact Dashboard - Realtime polling started (5s interval)');
         });
     </script>
 </body>

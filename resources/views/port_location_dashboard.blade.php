@@ -44,26 +44,23 @@
     <!-- Leaflet.js JS CDN -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <!-- Skrip AJAX untuk Fetch REST API & Plotting Marker Peta -->
+    <!-- Skrip AJAX untuk Fetch REST API & Plotting Marker Peta + REALTIME POLLING -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Inisialisasi Objek Peta Leaflet (Titik awal tengah dunia [lat, lng], zoom level 2)
-            const map = L.map('portMap').setView([10.0, 20.0], 2);
+        let mapMarkers = [];
+        let portMap = null;
 
-            // 2. Set Layer Peta Menggunakan OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            // 3. Tarik data koordinat dari REST API internal via AJAX Fetch
+        function fetchAndUpdatePorts() {
             fetch('/api/port-locations')
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
                         document.getElementById('node-count').innerText = `Terdeteksi: ${data.total_nodes} Pelabuhan`;
 
-                        // Perulangan untuk meletakkan marker pin merah pada koordinat pelabuhan
+                        // Clear existing markers
+                        mapMarkers.forEach(marker => portMap.removeLayer(marker));
+                        mapMarkers = [];
+
+                        // Add updated markers
                         data.results.forEach(port => {
                             if (port.latitude && port.longitude) {
                                 const popupContent = `
@@ -74,17 +71,36 @@
                                     </div>
                                 `;
 
-                                L.marker([port.latitude, port.longitude])
-                                    .addTo(map)
+                                const marker = L.marker([port.latitude, port.longitude])
+                                    .addTo(portMap)
                                     .bindPopup(popupContent);
+                                mapMarkers.push(marker);
                             }
                         });
                     }
                 })
                 .catch(error => {
-                    console.error("Geospatial Map Engine Error:", error);
-                    alert("Gagal memuat visualisasi koordinat spasial pelabuhan.");
+                    console.error("❌ Geospatial Map Engine Error:", error);
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Inisialisasi Objek Peta Leaflet
+            portMap = L.map('portMap').setView([10.0, 20.0], 2);
+
+            // 2. Set Layer Peta Menggunakan OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(portMap);
+
+            // 3. Fetch immediately
+            fetchAndUpdatePorts();
+
+            // 4. Setup realtime polling setiap 5 detik
+            setInterval(fetchAndUpdatePorts, 5000);
+            
+            console.log('✅ Port Location Dashboard - Realtime polling started (5s interval)');
         });
     </script>
 </body>

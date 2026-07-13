@@ -56,9 +56,11 @@
         </div>
     </div>
 
-    <!-- Skrip AJAX untuk Fetch REST API & Menggambar Chart.js Pie -->
+    <!-- Skrip AJAX untuk Fetch REST API & Menggambar Chart.js Pie + REALTIME POLLING -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let sentimentPieChart = null;
+
+        function fetchAndUpdateNews() {
             fetch('/api/news-intelligence')
                 .then(response => response.json())
                 .then(data => {
@@ -79,43 +81,64 @@
                                 </tr>
                             `;
                         });
-                        document.getElementById('news-table-body').innerHTML = rowsHtml;
 
-                        // 2. Render Sebaran Data ke Pie Chart
+                        const tbody = document.getElementById('news-table-body');
+                        tbody.style.opacity = '0.7';
+                        setTimeout(() => {
+                            tbody.innerHTML = rowsHtml;
+                            tbody.style.opacity = '1';
+                        }, 100);
+
+                        // 2. Update Pie Chart dengan sentiment distribution
                         const dist = data.sentiment_distribution;
-                        const ctx = document.getElementById('sentimentPieChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'pie',
-                            data: {
-                                labels: ['Positive', 'Neutral', 'Disruption'],
-                                datasets: [{
-                                    data: [dist.Positive, dist.Neutral, dist.Disruption],
-                                    backgroundColor: [
-                                        'rgba(25, 135, 84, 0.7)',  // Hijau
-                                        'rgba(108, 117, 125, 0.7)', // Abu-abu
-                                        'rgba(220, 53, 69, 0.7)'   // Merah
-                                    ],
-                                    borderColor: ['#fff', '#fff', '#fff'],
-                                    borderWidth: 2
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: { position: 'bottom' }
+                        if (!sentimentPieChart) {
+                            const ctx = document.getElementById('sentimentPieChart').getContext('2d');
+                            sentimentPieChart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: ['Positive', 'Neutral', 'Disruption'],
+                                    datasets: [{
+                                        data: [dist.Positive, dist.Neutral, dist.Disruption],
+                                        backgroundColor: [
+                                            'rgba(25, 135, 84, 0.7)',
+                                            'rgba(108, 117, 125, 0.7)',
+                                            'rgba(220, 53, 69, 0.7)'
+                                        ],
+                                        borderColor: ['#fff', '#fff', '#fff'],
+                                        borderWidth: 2
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: 'bottom' }
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            sentimentPieChart.data.datasets[0].data = [dist.Positive, dist.Neutral, dist.Disruption];
+                            sentimentPieChart.update('active');
+                        }
                     }
                 })
                 .catch(error => {
-                    console.error("News Intelligence Engine Error:", error);
+                    console.error("❌ News Intelligence Engine Error:", error);
                     document.getElementById('news-table-body').innerHTML = `
                         <tr>
                             <td colspan="3" class="text-center text-danger py-4">Gagal memproses feed berita logistik.</td>
                         </tr>
                     `;
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch immediately
+            fetchAndUpdateNews();
+
+            // Then setup realtime polling setiap 5 detik
+            setInterval(fetchAndUpdateNews, 5000);
+            
+            console.log('✅ News Intelligence Dashboard - Realtime polling started (5s interval)');
         });
     </script>
 </body>

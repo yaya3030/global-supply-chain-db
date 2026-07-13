@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\CountryComparisonController;
 use App\Http\Controllers\Api\FavoriteMonitoringController;
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\RiskAnalysisController;
+use App\Http\Controllers\Api\RealtimeCurrencyController;
+use App\Http\Controllers\Api\RealtimePortController;
 use App\Http\Controllers\DashboardController;
 
 // Import Controller Web (Khusus untuk beberapa API yang dipanggil dari Dashboard)
@@ -46,6 +48,22 @@ Route::get('/favorite-monitoring', [FavoriteMonitoringController::class, 'getFav
 Route::get('/admin-stats', [AdminDashboardController::class, 'getStats']);
 Route::get('/dashboard-summary', [App\Http\Controllers\DashboardStatsController::class, 'getDashboardSummary']);
 Route::get('/dashboard/country-data', [DashboardController::class, 'countryData']);
+
+
+// ===== MODUL TAMBAHAN: REALTIME CURRENCY (FITUR BARU) =====
+Route::prefix('currency')->group(function () {
+    Route::get('/realtime', [RealtimeCurrencyController::class, 'getRealtime']);
+    Route::get('/trend', [RealtimeCurrencyController::class, 'getTrend']);
+    Route::get('/comparison', [RealtimeCurrencyController::class, 'getComparison']);
+    Route::post('/refresh', [RealtimeCurrencyController::class, 'refreshCache']);
+});
+
+// ===== MODUL TAMBAHAN: REALTIME PORT DATA (FITUR BARU) =====
+Route::prefix('port')->group(function () {
+    Route::get('/realtime', [RealtimePortController::class, 'getRealtime']);
+    Route::get('/comparison', [RealtimePortController::class, 'getComparison']);
+    Route::post('/refresh', [RealtimePortController::class, 'refreshCache']);
+});
 
 
 // Modul Tahap 4: Risk Analysis (Wajib gunakan POST)

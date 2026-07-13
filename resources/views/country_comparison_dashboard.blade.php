@@ -57,9 +57,11 @@
         </div>
     </div>
 
-    <!-- Skrip AJAX untuk Fetch REST API & Merender Multi-Bar Chart -->
+    <!-- Skrip AJAX untuk Fetch REST API & Merender Multi-Bar Chart + REALTIME POLLING -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let comparisonChart = null;
+
+        function fetchAndUpdateComparison() {
             fetch('/api/country-comparison-data')
                 .then(response => response.json())
                 .then(data => {
@@ -86,58 +88,81 @@
                             `;
                         });
 
-                        document.getElementById('comparison-table-body').innerHTML = tableRowsHtml;
+                        const tbody = document.getElementById('comparison-table-body');
+                        tbody.style.opacity = '0.7';
+                        setTimeout(() => {
+                            tbody.innerHTML = tableRowsHtml;
+                            tbody.style.opacity = '1';
+                        }, 100);
 
-                        // Menggambar Multi-Bar Chart menggunakan Chart.js
-                        const ctx = document.getElementById('comparisonChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: labels,
-                                datasets: [
-                                    {
-                                        label: 'Efisiensi Logistik',
-                                        data: efficiencyScores,
-                                        backgroundColor: 'rgba(25, 135, 84, 0.7)',
-                                        borderColor: 'rgba(25, 135, 84, 1)',
-                                        borderWidth: 1
-                                    },
-                                    {
-                                        label: 'Tingkat Risiko',
-                                        data: riskScores,
-                                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                                        borderColor: 'rgba(220, 53, 69, 1)',
-                                        borderWidth: 1
-                                    },
-                                    {
-                                        label: 'Stabilitas Mata Uang',
-                                        data: stabilityScores,
-                                        backgroundColor: 'rgba(13, 202, 240, 0.7)',
-                                        borderColor: 'rgba(13, 202, 240, 1)',
-                                        borderWidth: 1
-                                    }
-                                ]
-                            },
-                            options: {
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        max: 100
+                        // Update atau buat chart
+                        if (!comparisonChart) {
+                            const ctx = document.getElementById('comparisonChart').getContext('2d');
+                            comparisonChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [
+                                        {
+                                            label: 'Efisiensi Logistik',
+                                            data: efficiencyScores,
+                                            backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                                            borderColor: 'rgba(25, 135, 84, 1)',
+                                            borderWidth: 1
+                                        },
+                                        {
+                                            label: 'Tingkat Risiko',
+                                            data: riskScores,
+                                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                                            borderColor: 'rgba(220, 53, 69, 1)',
+                                            borderWidth: 1
+                                        },
+                                        {
+                                            label: 'Stabilitas Mata Uang',
+                                            data: stabilityScores,
+                                            backgroundColor: 'rgba(13, 202, 240, 0.7)',
+                                            borderColor: 'rgba(13, 202, 240, 1)',
+                                            borderWidth: 1
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            max: 100
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            comparisonChart.data.labels = labels;
+                            comparisonChart.data.datasets[0].data = efficiencyScores;
+                            comparisonChart.data.datasets[1].data = riskScores;
+                            comparisonChart.data.datasets[2].data = stabilityScores;
+                            comparisonChart.update('active');
+                        }
                     }
                 })
                 .catch(error => {
-                    console.error("Comparison Engine Error:", error);
+                    console.error("❌ Comparison Engine Error:", error);
                     document.getElementById('comparison-table-body').innerHTML = `
                         <tr>
                             <td colspan="4" class="text-center text-danger py-4">Gagal memproses analisis komparatif negara.</td>
                         </tr>
                     `;
                 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch immediately
+            fetchAndUpdateComparison();
+
+            // Then setup realtime polling setiap 5 detik
+            setInterval(fetchAndUpdateComparison, 5000);
+            
+            console.log('✅ Country Comparison Dashboard - Realtime polling started (5s interval)');
         });
     </script>
 </body>
