@@ -1,145 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Intelligence Dashboard</title>
-    <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-light">
+@extends('layouts.app')
 
-    <!-- Top Navbar -->
-    <nav class="navbar navbar-dark bg-dark mb-4 shadow">
-        <div class="container">
-            <a class="navbar-brand font-monospace fw-bold text-success" href="#">📰 SUPPLY CHAIN NEWS INTELLIGENCE</a>
-            <span class="navbar-text text-white-50">Stage 3: Event & Sentiment Analysis</span>
-        </div>
-    </nav>
+@section('title', 'News Intelligence — Supply Chain Risk Intelligence')
+@section('breadcrumb', 'News Intelligence')
 
-    <div class="container mb-5">
-        <div class="row g-4">
-            <!-- Kolom Kiri: Visualisasi Sebaran Sentimen (Pie Chart) -->
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm p-4 bg-white h-100">
-                    <h5 class="card-title fw-bold text-secondary mb-3">Distribusi Dampak Berita</h5>
-                    <div class="d-flex align-items-center justify-content-center flex-grow-1">
-                        <canvas id="sentimentPieChart" style="max-height: 260px;"></canvas>
-                    </div>
-                </div>
+@section('content')
+<div class="dashboard-page">
+    <div class="page-header">
+        <h1 class="page-title">News Intelligence</h1>
+        <p class="page-subtitle">Event-driven sentiment analysis and supply chain disruption monitoring</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+        <!-- Left: Sentiment Pie -->
+        <div class="card-modern animate-fade-up">
+            <div class="card-header-modern">
+                <span class="card-title-modern"><i class="ti ti-chart-pie"></i> Impact Distribution</span>
             </div>
+            <div style="display: flex; align-items: center; justify-content: center; height: 280px;">
+                <canvas id="sentimentPieChart"></canvas>
+            </div>
+        </div>
 
-            <!-- Kolom Kanan: Umpan Live Intelijen Berita Logistik -->
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm p-4 bg-white h-100">
-                    <h5 class="card-title fw-bold text-dark mb-3">Feed Analisis Berita Global</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Topik Berita Logistik</th>
-                                    <th>Sumber</th>
-                                    <th class="text-center">Dampak Sistem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="news-table-body">
-                                <tr>
-                                    <td colspan="3" class="text-center text-muted py-4">Memilah indeks berita logistik via AJAX...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Right: News Feed Table -->
+        <div class="card-modern animate-fade-up" style="animation-delay: 80ms;">
+            <div class="card-header-modern">
+                <span class="card-title-modern"><i class="ti ti-news"></i> Global News Feed</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="table-modern" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Logistics News Topic</th>
+                            <th>Source</th>
+                            <th style="text-align: center;">System Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="news-table-body">
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 32px; color: var(--gray-400);">
+                                <div class="loading-skeleton" style="height: 16px; width: 220px; margin: 0 auto;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
+@endsection
 
-    <!-- Skrip AJAX untuk Fetch REST API & Menggambar Chart.js Pie + REALTIME POLLING -->
-    <script>
-        let sentimentPieChart = null;
+@section('extra_scripts')
+<script>
+    let sentimentPieChart = null;
 
-        function fetchAndUpdateNews() {
-            fetch('/api/news-intelligence')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        let rowsHtml = "";
+    function fetchAndUpdateNews() {
+        fetch('/api/news-intelligence')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    let rowsHtml = "";
 
-                        // 1. Bangun List Tabel Berita
-                        data.articles.forEach(article => {
-                            rowsHtml += `
-                                <tr>
-                                    <td class="fw-semibold text-dark text-wrap" style="max-width: 400px;">${article.title}</td>
-                                    <td class="text-secondary small font-monospace">${article.source}</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-${article.badge_color} text-uppercase font-monospace p-2">
-                                            ${article.impact_category}
-                                        </span>
-                                    </td>
-                                </tr>
-                            `;
-                        });
+                    data.articles.forEach(article => {
+                        let badgeClass = "badge-info";
+                        if (article.badge_color === 'success') badgeClass = "badge-success";
+                        if (article.badge_color === 'warning') badgeClass = "badge-warning";
+                        if (article.badge_color === 'danger') badgeClass = "badge-danger";
 
-                        const tbody = document.getElementById('news-table-body');
-                        tbody.style.opacity = '0.7';
-                        setTimeout(() => {
-                            tbody.innerHTML = rowsHtml;
-                            tbody.style.opacity = '1';
-                        }, 100);
+                        rowsHtml += `
+                            <tr>
+                                <td style="font-weight: 600; color: var(--gray-800); max-width: 400px;">${article.title}</td>
+                                <td style="color: var(--gray-500); font-size: 13px; font-family: monospace;">${article.source}</td>
+                                <td style="text-align: center;">
+                                    <span class="badge-modern ${badgeClass}" style="text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">
+                                        ${article.impact_category}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    });
 
-                        // 2. Update Pie Chart dengan sentiment distribution
-                        const dist = data.sentiment_distribution;
-                        if (!sentimentPieChart) {
-                            const ctx = document.getElementById('sentimentPieChart').getContext('2d');
-                            sentimentPieChart = new Chart(ctx, {
-                                type: 'pie',
-                                data: {
-                                    labels: ['Positive', 'Neutral', 'Disruption'],
-                                    datasets: [{
-                                        data: [dist.Positive, dist.Neutral, dist.Disruption],
-                                        backgroundColor: [
-                                            'rgba(25, 135, 84, 0.7)',
-                                            'rgba(108, 117, 125, 0.7)',
-                                            'rgba(220, 53, 69, 0.7)'
-                                        ],
-                                        borderColor: ['#fff', '#fff', '#fff'],
-                                        borderWidth: 2
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    plugins: {
-                                        legend: { position: 'bottom' }
+                    const tbody = document.getElementById('news-table-body');
+                    tbody.style.opacity = '0.5';
+                    setTimeout(() => {
+                        tbody.innerHTML = rowsHtml;
+                        tbody.style.opacity = '1';
+                        tbody.style.transition = 'opacity 0.3s ease';
+                    }, 100);
+
+                    const dist = data.sentiment_distribution;
+                    if (!sentimentPieChart) {
+                        const ctx = document.getElementById('sentimentPieChart').getContext('2d');
+                        sentimentPieChart = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Positive', 'Neutral', 'Disruption'],
+                                datasets: [{
+                                    data: [dist.Positive, dist.Neutral, dist.Disruption],
+                                    backgroundColor: [
+                                        'rgba(16, 185, 129, 0.8)',
+                                        'rgba(139, 92, 246, 0.6)',
+                                        'rgba(239, 68, 68, 0.8)'
+                                    ],
+                                    borderColor: '#fff',
+                                    borderWidth: 3,
+                                    hoverOffset: 8
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                cutout: '55%',
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: { padding: 16, font: { family: 'Inter', size: 12, weight: 600 } }
                                     }
                                 }
-                            });
-                        } else {
-                            sentimentPieChart.data.datasets[0].data = [dist.Positive, dist.Neutral, dist.Disruption];
-                            sentimentPieChart.update('active');
-                        }
+                            }
+                        });
+                    } else {
+                        sentimentPieChart.data.datasets[0].data = [dist.Positive, dist.Neutral, dist.Disruption];
+                        sentimentPieChart.update('active');
                     }
-                })
-                .catch(error => {
-                    console.error("❌ News Intelligence Engine Error:", error);
-                    document.getElementById('news-table-body').innerHTML = `
-                        <tr>
-                            <td colspan="3" class="text-center text-danger py-4">Gagal memproses feed berita logistik.</td>
-                        </tr>
-                    `;
-                });
-        }
+                }
+            })
+            .catch(error => {
+                console.error("❌ News Intelligence Error:", error);
+                document.getElementById('news-table-body').innerHTML = `
+                    <tr><td colspan="3" style="text-align: center; color: var(--danger); padding: 24px;">Failed to process news feed.</td></tr>
+                `;
+            });
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fetch immediately
-            fetchAndUpdateNews();
-
-            // Then setup realtime polling setiap 5 detik
-            setInterval(fetchAndUpdateNews, 5000);
-            
-            console.log('✅ News Intelligence Dashboard - Realtime polling started (5s interval)');
-        });
-    </script>
-</body>
-</html>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchAndUpdateNews();
+        setInterval(fetchAndUpdateNews, 5000);
+    });
+</script>
+@endsection

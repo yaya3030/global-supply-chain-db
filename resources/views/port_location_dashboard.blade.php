@@ -1,107 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Port Location Dashboard</title>
-    <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Leaflet.js CSS CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        #portMap {
-            height: 500px;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-<body class="bg-light">
+@extends('layouts.app')
 
-    <!-- Top Navbar -->
-    <nav class="navbar navbar-dark bg-info mb-4 shadow">
-        <div class="container">
-            <a class="navbar-brand font-monospace fw-bold text-dark" href="#">🗺️ GLOBAL PORT GEOSPATIAL MAP</a>
-            <span class="navbar-text text-dark-50 fw-semibold">Stage 3: Spatially Distributed Logistics Nodes</span>
-        </div>
-    </nav>
+@section('title', 'Port Locations — Supply Chain Risk Intelligence')
+@section('breadcrumb', 'Port Locations')
 
-    <div class="container mb-5">
-        <div class="row g-4">
-            <!-- Kolom Utama: Peta Interaktif Leaflet.js -->
-            <div class="col-12">
-                <div class="card border-0 shadow-sm p-4 bg-white">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title fw-bold text-dark m-0">Peta Sebaran Node Pelabuhan Internasional</h5>
-                        <span id="node-count" class="badge bg-dark p-2">Memuat Node Spasial...</span>
-                    </div>
-                    <!-- Kontainer untuk merender Peta -->
-                    <div id="portMap" class="shadow-inner bg-light border"></div>
-                </div>
-            </div>
+@section('extra_head')
+<style>
+    #portMap {
+        height: 520px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--gray-200);
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="dashboard-page">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h1 class="page-title">Port Geospatial Map</h1>
+            <p class="page-subtitle">Interactive world map of spatially distributed logistics nodes</p>
         </div>
+        <span id="node-count" class="badge-modern badge-violet" style="font-size: 12px; padding: 6px 16px;">
+            <i class="ti ti-map-pin" style="font-size: 14px;"></i> Loading nodes...
+        </span>
     </div>
 
-    <!-- Leaflet.js JS CDN -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Skrip AJAX untuk Fetch REST API & Plotting Marker Peta + REALTIME POLLING -->
-    <script>
-        let mapMarkers = [];
-        let portMap = null;
+    <div class="card-modern animate-fade-up">
+        <div class="card-header-modern">
+            <span class="card-title-modern"><i class="ti ti-map-2"></i> International Port Distribution</span>
+        </div>
+        <div id="portMap"></div>
+    </div>
+</div>
+@endsection
 
-        function fetchAndUpdatePorts() {
-            fetch('/api/port-locations')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        document.getElementById('node-count').innerText = `Terdeteksi: ${data.total_nodes} Pelabuhan`;
+@section('extra_scripts')
+<script>
+    let mapMarkers = [];
+    let portMap = null;
 
-                        // Clear existing markers
-                        mapMarkers.forEach(marker => portMap.removeLayer(marker));
-                        mapMarkers = [];
+    function fetchAndUpdatePorts() {
+        fetch('/api/port-locations')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('node-count').innerHTML = `<i class="ti ti-map-pin" style="font-size: 14px;"></i> Detected: ${data.total_nodes} Ports`;
 
-                        // Add updated markers
-                        data.results.forEach(port => {
-                            if (port.latitude && port.longitude) {
-                                const popupContent = `
-                                    <div class="p-1">
-                                        <h6 class="fw-bold text-primary mb-1">⚓ ${port.port_name}</h6>
-                                        <p class="text-muted small mb-0">Negara: <b>${port.country_name}</b></p>
-                                        <span class="text-secondary small font-monospace">Coord: ${port.latitude}, ${port.longitude}</span>
-                                    </div>
-                                `;
+                    mapMarkers.forEach(marker => portMap.removeLayer(marker));
+                    mapMarkers = [];
 
-                                const marker = L.marker([port.latitude, port.longitude])
-                                    .addTo(portMap)
-                                    .bindPopup(popupContent);
-                                mapMarkers.push(marker);
-                            }
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error("❌ Geospatial Map Engine Error:", error);
-                });
-        }
+                    data.results.forEach(port => {
+                        if (port.latitude && port.longitude) {
+                            const popupContent = `
+                                <div style="font-family: Inter, sans-serif; padding: 4px;">
+                                    <h6 style="font-weight: 700; color: #7c3aed; margin-bottom: 4px; font-size: 14px;">⚓ ${port.port_name}</h6>
+                                    <p style="color: #64748b; font-size: 12px; margin-bottom: 2px;">Country: <b style="color: #1e293b;">${port.country_name}</b></p>
+                                    <span style="color: #94a3b8; font-size: 11px; font-family: monospace;">Coord: ${port.latitude}, ${port.longitude}</span>
+                                </div>
+                            `;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Inisialisasi Objek Peta Leaflet
-            portMap = L.map('portMap').setView([10.0, 20.0], 2);
+                            const marker = L.marker([port.latitude, port.longitude])
+                                .addTo(portMap)
+                                .bindPopup(popupContent);
+                            mapMarkers.push(marker);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("❌ Geospatial Map Error:", error);
+            });
+    }
 
-            // 2. Set Layer Peta Menggunakan OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(portMap);
+    document.addEventListener('DOMContentLoaded', function() {
+        portMap = L.map('portMap').setView([10.0, 20.0], 2);
 
-            // 3. Fetch immediately
-            fetchAndUpdatePorts();
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(portMap);
 
-            // 4. Setup realtime polling setiap 5 detik
-            setInterval(fetchAndUpdatePorts, 5000);
-            
-            console.log('✅ Port Location Dashboard - Realtime polling started (5s interval)');
-        });
-    </script>
-</body>
-</html>
+        fetchAndUpdatePorts();
+        setInterval(fetchAndUpdatePorts, 5000);
+    });
+</script>
+@endsection

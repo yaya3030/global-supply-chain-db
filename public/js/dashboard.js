@@ -251,11 +251,18 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             
+            const selectedCountry = this.dataset.country;
+
+            // Sync state with realtime script to prevent it from polling the wrong country
+            if (window.dashboardRealtime) {
+                window.dashboardRealtime.currentCountry = selectedCountry;
+            }
+            
             // Add smooth transition
             const dashboardPage = document.querySelector('.dashboard-page');
             dashboardPage.style.opacity = '0.8';
             
-            loadCountryData(this.dataset.country);
+            loadCountryData(selectedCountry);
             
             setTimeout(() => {
                 dashboardPage.style.opacity = '1';

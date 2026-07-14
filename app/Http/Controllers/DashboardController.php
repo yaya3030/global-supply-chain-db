@@ -35,8 +35,10 @@ class DashboardController extends Controller
 
         $cacheKey = 'dashboard_country_' . $meta['iso2'];
 
-        $result = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($country, $meta) {
-            return [
+        $result = Cache::get($cacheKey);
+
+        if (!$result || $result['population'] === '-') {
+            $result = [
                 'population' => $this->getPopulation($meta['iso3']),
                 'gdp'        => $this->getGdp($meta['iso3']),
                 'inflation'  => $this->getInflation($meta['iso3']),
@@ -46,7 +48,14 @@ class DashboardController extends Controller
                 'trend'      => $this->getRiskTrend($country),
                 'news'       => $this->getNews($country),
             ];
-        });
+
+            // Cache for 10 minutes only if successful. If failed, cache for 10 seconds to prevent spam.
+            if ($result['population'] !== '-' || $result['currency']['display'] !== '-') {
+                Cache::put($cacheKey, $result, now()->addMinutes(10));
+            } else {
+                Cache::put($cacheKey, $result, now()->addSeconds(10));
+            }
+        }
 
         return response()->json($result);
     }

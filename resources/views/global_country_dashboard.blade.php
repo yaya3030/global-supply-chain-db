@@ -1,86 +1,83 @@
 @extends('layouts.app')
 
+@section('title', 'Global Countries — Supply Chain Risk Intelligence')
+@section('breadcrumb', 'Global Countries')
+
 @section('content')
-<style>
-    .card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-</style>
+<div class="dashboard-page">
+    <div class="page-header">
+        <h1 class="page-title">Global Country Analytics</h1>
+        <p class="page-subtitle">Country inventory, port distribution, and logistics infrastructure overview</p>
+    </div>
 
-<!-- Header Halaman -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="fw-bold text-dark">Global Country Analytics</h3>
-    <span class="text-muted">Stage 3: Supply Chain Engine</span>
-</div>
-
-<div class="container-fluid p-0">
-    <!-- Top Statistics Row -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="card p-3 bg-white border-start border-info border-4">
-                <div class="text-muted small text-uppercase fw-bold">Total Terdaftar</div>
-                <div id="metric-countries" class="h3 fw-bold text-dark">- Negara</div>
+    <!-- Top Stats -->
+    <div class="stat-grid stagger-children mb-4">
+        <div class="stat-card animate-fade-up">
+            <div class="stat-card-icon violet">
+                <i class="ti ti-globe"></i>
             </div>
+            <p class="stat-card-label">Registered Countries</p>
+            <p class="stat-card-value" id="metric-countries">—</p>
         </div>
-        <div class="col-md-6">
-            <div class="card p-3 bg-white border-start border-success border-4">
-                <div class="text-muted small text-uppercase fw-bold">Total Infrastruktur Pelabuhan</div>
-                <div id="metric-ports" class="h3 fw-bold text-dark">- Titik Port</div>
+        <div class="stat-card animate-fade-up">
+            <div class="stat-card-icon success">
+                <i class="ti ti-anchor"></i>
             </div>
+            <p class="stat-card-label">Maritime Port Hubs</p>
+            <p class="stat-card-value" id="metric-ports">—</p>
         </div>
     </div>
 
-    <!-- Charts & Tables Row -->
-    <div class="row g-4">
-        <!-- Left Column: Chart -->
-        <div class="col-lg-6">
-            <div class="card p-4 bg-white h-100">
-                <h5 class="card-title fw-bold text-secondary mb-3">Distribusi Pelabuhan per Negara</h5>
-                <div class="chart-container flex-grow-1 d-flex align-items-center justify-content-center">
-                    <canvas id="portsDistributionChart" style="max-height: 320px;"></canvas>
-                </div>
+    <!-- Chart + Table -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div class="card-modern animate-fade-up">
+            <div class="card-header-modern">
+                <span class="card-title-modern"><i class="ti ti-chart-bar"></i> Port Distribution by Country</span>
+            </div>
+            <div style="position: relative; height: 340px;">
+                <canvas id="portsDistributionChart"></canvas>
             </div>
         </div>
 
-        <!-- Right Column: Table -->
-        <div class="col-lg-6">
-            <div class="card p-4 bg-white h-100">
-                <h5 class="card-title fw-bold text-secondary mb-3">Data Inventori Negara</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Nama Negara</th>
-                                <th class="text-center">ISO2</th>
-                                <th class="text-center">ISO3</th>
-                                <th class="text-center">Mata Uang</th>
-                                <th class="text-center">Aset Port</th>
-                            </tr>
-                        </thead>
-                        <tbody id="country-table-body">
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-4">Memproses data via AJAX...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="card-modern animate-fade-up" style="animation-delay: 80ms;">
+            <div class="card-header-modern">
+                <span class="card-title-modern"><i class="ti ti-table"></i> Country Inventory</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="table-modern" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th style="text-align: center;">ISO2</th>
+                            <th style="text-align: center;">ISO3</th>
+                            <th style="text-align: center;">Currency</th>
+                            <th style="text-align: center;">Ports</th>
+                        </tr>
+                    </thead>
+                    <tbody id="country-table-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 32px; color: var(--gray-400);">
+                                <div class="loading-skeleton" style="height: 16px; width: 180px; margin: 0 auto;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 @endsection
 
-@push('scripts')
+@section('extra_scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // AJAX Fetching
         fetch('/api/countries-summary')
             .then(response => response.json())
             .then(result => {
                 if (result.status === 'success') {
-                    // Update Metrics
-                    document.getElementById('metric-countries').innerText = `${result.summary.total_countries} Negara`;
-                    document.getElementById('metric-ports').innerText = `${result.summary.total_monitored_ports} Hub Maritim`;
+                    document.getElementById('metric-countries').innerText = `${result.summary.total_countries} Countries`;
+                    document.getElementById('metric-ports').innerText = `${result.summary.total_monitored_ports} Hubs`;
 
-                    // Prepare Chart Data
                     const labelNegara = [];
                     const dataJumlahPort = [];
                     let tableRowsHtml = "";
@@ -91,47 +88,49 @@
 
                         tableRowsHtml += `
                             <tr>
-                                <td class="fw-bold text-dark">${country.name}</td>
-                                <td class="text-center text-secondary small">${country.iso2 ?? '-'}</td>
-                                <td class="text-center text-secondary small">${country.iso3 ?? '-'}</td>
-                                <td class="text-center"><span class="badge bg-secondary font-monospace">${country.currency_code ?? '-'}</span></td>
-                                <td class="text-center fw-bold text-info">${country.ports_count}</td>
+                                <td style="font-weight: 600; color: var(--gray-800);">${country.name}</td>
+                                <td style="text-align: center; color: var(--gray-500); font-size: 13px;">${country.iso2 ?? '-'}</td>
+                                <td style="text-align: center; color: var(--gray-500); font-size: 13px;">${country.iso3 ?? '-'}</td>
+                                <td style="text-align: center;"><span class="badge-modern badge-violet" style="font-family: monospace;">${country.currency_code ?? '-'}</span></td>
+                                <td style="text-align: center; font-weight: 700; color: var(--violet-600);">${country.ports_count}</td>
                             </tr>
                         `;
                     });
 
-                    // Render Table
                     document.getElementById('country-table-body').innerHTML = tableRowsHtml;
 
-                    // Render Chart
                     const ctx = document.getElementById('portsDistributionChart').getContext('2d');
                     new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: labelNegara,
                             datasets: [{
-                                label: 'Jumlah Pelabuhan',
+                                label: 'Number of Ports',
                                 data: dataJumlahPort,
-                                backgroundColor: 'rgba(13, 202, 240, 0.6)',
-                                borderColor: 'rgba(13, 202, 240, 1)',
+                                backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                                borderColor: 'rgba(139, 92, 246, 1)',
                                 borderWidth: 1.5,
-                                borderRadius: 4
+                                borderRadius: 6
                             }]
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             plugins: { legend: { display: false } },
-                            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                            scales: {
+                                y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+                                x: { grid: { display: false } }
+                            }
                         }
                     });
                 }
             })
             .catch(error => {
-                console.error("Kesalahan AJAX:", error);
+                console.error("❌ Country Analytics Error:", error);
                 document.getElementById('country-table-body').innerHTML = `
-                    <tr><td colspan="5" class="text-center text-danger py-4">Gagal memproses data.</td></tr>
+                    <tr><td colspan="5" style="text-align: center; color: var(--danger); padding: 24px;">Failed to load country data.</td></tr>
                 `;
             });
     });
 </script>
-@endpush
+@endsection
