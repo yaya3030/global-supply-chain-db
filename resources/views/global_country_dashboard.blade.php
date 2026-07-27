@@ -256,6 +256,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(function(e) {
             console.error("❌ Countries Summary API Error:", e);
         });
+
+    // Mulai polling real-time setiap 5 detik
+    setInterval(() => {
+        const selectedId = document.getElementById('metricsCountrySelect').value;
+        if (selectedId) {
+            fetchAndRenderCountryMetrics(selectedId);
+        }
+    }, 5000);
 });
 
 function populateMetricsCountrySelect(countries) {

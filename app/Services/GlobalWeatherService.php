@@ -138,6 +138,12 @@ class GlobalWeatherService
                 } else {
                     $lat = $country->ports && $country->ports->count() > 0 ? (float)$country->ports->avg('latitude') : 10.0;
                     $lng = $country->ports && $country->ports->count() > 0 ? (float)$country->ports->avg('longitude') : 20.0;
+
+                    // Prevent exact stacking for fallback locations
+                    if ($lat == 10.0 && $lng == 20.0) {
+                        $lat += (($country->id % 20) - 10) * 1.5;
+                        $lng += (($country->id % 30) - 15) * 1.5;
+                    }
                 }
 
                 // Deterministic weather seed based on country ID
@@ -193,13 +199,13 @@ class GlobalWeatherService
             }
 
             // Get complete unique list of countries for dropdown select sorted alphabetically
-            $allCountriesSelect = Country::orderBy('name', 'asc')->get()->map(function($c) {
+            $allCountriesSelect = collect($countryWeatherList)->map(function($c) {
                 return [
-                    'id' => $c->id,
-                    'name' => trim(preg_replace('/\s+[A-Z]{2}$/', '', $c->name)),
-                    'iso2' => $c->iso2
+                    'id' => $c['country_id'],
+                    'name' => $c['country_name'],
+                    'iso2' => $c['iso2']
                 ];
-            })->unique('name')->values()->toArray();
+            })->sortBy('name')->values()->toArray();
 
         } catch (Exception $e) {
             $countryWeatherList = [

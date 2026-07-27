@@ -18,9 +18,12 @@ class CountryComparisonController extends Controller
     /**
      * Endpoint GET /api/country-comparison-data
      */
-    public function getComparisonMetrics(): JsonResponse
+    public function getComparisonMetrics(\Illuminate\Http\Request $request): JsonResponse
     {
-        $data = $this->comparisonService->getComparisonData();
+        $country1 = $request->query('country1', 'DE');
+        $country2 = $request->query('country2', 'AU');
+
+        $data = $this->comparisonService->getComparisonData($country1, $country2);
 
         return response()->json([
             'status' => 'success',

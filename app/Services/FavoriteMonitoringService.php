@@ -8,39 +8,72 @@ use Exception;
 class FavoriteMonitoringService
 {
     /**
-     * Mengambil daftar status terkini dari entitas yang difavoritkan.
+     * Mengambil daftar status terkini dari negara yang difavoritkan.
      */
     public function getFavoriteStatus(): array
     {
-        try {
-            // Simulasi mengambil data favorit (mengasumsikan relasi atau data favorit ada)
-            // Di sini kita mengambil 3 pelabuhan utama sebagai sampel favorit pengguna
-            $favorites = Port::whereIn('id', [1, 2, 3])->get();
+        // Use a default user since there's no auth
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => 'demo@example.com'],
+            ['name' => 'Demo User', 'password' => bcrypt('password')]
+        );
 
-            if ($favorites->isEmpty()) {
-                throw new Exception("Data favorit belum diatur.");
+        $watchlists = \App\Models\Watchlist::with('country')->where('user_id', $user->id)->get();
+
+        $list = [];
+        foreach ($watchlists as $wl) {
+            if (!$wl->country) continue;
+            
+            // Generate deterministic mock data
+            $seed = crc32($wl->country->name);
+            $riskScore = max(10, min(90, 30 + ($seed % 50)));
+            
+            if ($riskScore > 65) {
+                $riskLevel = 'High';
+                $status = 'Warning/Congestion';
+            } elseif ($riskScore > 35) {
+                $riskLevel = 'Medium';
+                $status = 'Monitor Closely';
+            } else {
+                $riskLevel = 'Low';
+                $status = 'Operational';
             }
 
-            $list = [];
-            foreach ($favorites as $port) {
-                $list[] = [
-                    'name' => $port->port_name,
-                    'status' => 'Operational',
-                    'last_update' => now()->format('H:i'),
-                    'risk_level' => 'Low'
-                ];
-            }
-            return $list;
-
-        } catch (Exception $e) {
-            // =======================================================
-            // FALLBACK ENGINE (DATA CADANGAN FAVORIT)
-            // =======================================================
-            return [
-                ['name' => 'Tanjung Priok', 'status' => 'Operational', 'last_update' => '09:00', 'risk_level' => 'Low'],
-                ['name' => 'Port of Singapore', 'status' => 'Heavy Congestion', 'last_update' => '08:45', 'risk_level' => 'Medium'],
-                ['name' => 'Port of Rotterdam', 'status' => 'Operational', 'last_update' => '09:15', 'risk_level' => 'Low']
+            $list[] = [
+                'id' => $wl->country->id,
+                'name' => $wl->country->name,
+                'iso2' => strtolower($wl->country->iso2),
+                'status' => $status,
+                'last_update' => now()->format('H:i'),
+                'risk_level' => $riskLevel
             ];
         }
+
+        return $list;
+    }
+
+    public function addFavorite($country_id)
+    {
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => 'demo@example.com'],
+            ['name' => 'Demo User', 'password' => bcrypt('password')]
+        );
+
+        \App\Models\Watchlist::firstOrCreate([
+            'user_id' => $user->id,
+            'country_id' => $country_id
+        ]);
+    }
+
+    public function removeFavorite($country_id)
+    {
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => 'demo@example.com'],
+            ['name' => 'Demo User', 'password' => bcrypt('password')]
+        );
+
+        \App\Models\Watchlist::where('user_id', $user->id)
+            ->where('country_id', $country_id)
+            ->delete();
     }
 }

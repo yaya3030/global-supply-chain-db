@@ -25,4 +25,25 @@ class FavoriteMonitoringController extends Controller
             'data' => $this->favService->getFavoriteStatus()
         ], 200);
     }
+
+    public function addFavorite(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate(['country_id' => 'required|integer']);
+        $this->favService->addFavorite($request->country_id);
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Country added to favorites'
+        ], 200);
+    }
+
+    public function removeFavorite($country_id): JsonResponse
+    {
+        $this->favService->removeFavorite($country_id);
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Country removed from favorites'
+        ], 200);
+    }
 }

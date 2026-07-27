@@ -53,8 +53,15 @@ Route::get('/port-locations', [PortLocationController::class, 'getLocations']);
 Route::get('/port-goods/{port_id}', [GoodsController::class, 'getGoodsByPort']);
 Route::get('/shipping-routes', [ShippingRouteController::class, 'getRoutes']);
 Route::get('/data-visualization-metrics', [DataVisualizationController::class, 'getMetrics']);
+Route::get('/data-visualization-trends', [DataVisualizationController::class, 'getTrends']);
 Route::get('/country-comparison-data', [CountryComparisonController::class, 'getComparisonMetrics']);
+
+Route::get('/ports-by-country/{country_id}', [\App\Http\Controllers\ImportAnalyzerController::class, 'getPortsByCountry']);
+Route::post('/analyze-import', [\App\Http\Controllers\ImportAnalyzerController::class, 'analyzeImport']);
+
 Route::get('/favorite-monitoring', [FavoriteMonitoringController::class, 'getFavorites']);
+Route::post('/favorite-monitoring', [FavoriteMonitoringController::class, 'addFavorite']);
+Route::delete('/favorite-monitoring/{country_id}', [FavoriteMonitoringController::class, 'removeFavorite']);
 Route::get('/admin-stats', [AdminDashboardController::class, 'getStats']);
 Route::get('/dashboard-summary', [App\Http\Controllers\DashboardStatsController::class, 'getDashboardSummary']);
 Route::get('/dashboard/country-data', [DashboardController::class, 'countryData']);

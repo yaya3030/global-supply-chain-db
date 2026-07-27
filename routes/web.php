@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/global-country-dashboard', [GlobalCountryDashboardController::class, 'index'])->name('global.country');
     Route::get('/data-visualization-dashboard', [DataVisualizationDashboardController::class, 'index'])->name('visualization.index');
     Route::get('/favorite-monitoring-dashboard', [FavoriteMonitoringDashboardController::class, 'index'])->name('favorites.index');
+    Route::get('/import-analyzer-dashboard', [\App\Http\Controllers\ImportAnalyzerController::class, 'index'])->name('analyzer.index');
 
     // Report Downloads
     Route::get('/report/pdf', [ReportController::class, 'downloadPdf'])->name('report.pdf');

@@ -11,6 +11,7 @@ class DataVisualizationDashboardController extends Controller
      */
     public function index()
     {
-        return view('data_visualization_dashboard');
+        $countries = \App\Models\Country::orderBy('name', 'asc')->get();
+        return view('data_visualization_dashboard', compact('countries'));
     }
 }

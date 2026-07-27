@@ -53,6 +53,10 @@
                 <i class="ti ti-shield-exclamation"></i> Risk Scoring
             </a>
 
+            <a href="{{ route('analyzer.index') }}" class="nav-item {{ request()->routeIs('analyzer.*') ? 'active' : '' }}">
+                <i class="ti ti-scale"></i> Import Analyzer
+            </a>
+
             <a href="{{ route('weather.index') }}" class="nav-item {{ request()->routeIs('weather.*') ? 'active' : '' }}">
                 <i class="ti ti-cloud-storm"></i> Weather Monitor
             </a>

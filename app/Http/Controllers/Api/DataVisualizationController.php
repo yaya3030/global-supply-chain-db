@@ -29,4 +29,21 @@ class DataVisualizationController extends Controller
             'payload' => $data
         ], 200);
     }
+
+    /**
+     * Endpoint GET /api/data-visualization-trends
+     * Returns GDP, Inflation, Currency, Risk trend data.
+     */
+    public function getTrends(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $country = $request->query('country', 'global');
+        $data = $this->visualizationService->getTrendData($country);
+
+        return response()->json([
+            'status'       => 'success',
+            'engine'       => 'Economic Trend Analytics Engine',
+            'calculated_at'=> now()->toDateTimeString(),
+            'payload'      => $data
+        ], 200);
+    }
 }

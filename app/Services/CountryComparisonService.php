@@ -8,75 +8,65 @@ use Exception;
 class CountryComparisonService
 {
     /**
-     * Memproses data komparatif performa dan risiko antar negara.
+     * Memproses data komparatif performa dan risiko antar negara secara dinamis.
+     * @param string $c1 Kode ISO2 negara 1 (default: DE)
+     * @param string $c2 Kode ISO2 negara 2 (default: AU)
      */
-    public function getComparisonData(): array
+    public function getComparisonData(string $c1 = 'DE', string $c2 = 'AU'): array
     {
-        $comparisonData = [];
+        $country1 = Country::where('iso2', $c1)->first() ?? Country::first();
+        $country2 = Country::where('iso2', $c2)->first() ?? Country::orderBy('id', 'desc')->first();
 
-        try {
-            // Mengambil data negara beserta relasi pelabuhannya jika ada
-            $countries = Country::with('ports')->get();
+        // Helper to generate consistent deterministic fake data based on country name
+        $generateData = function($country) {
+            $seed = crc32($country->name);
+            
+            // Generate pseudo-random realistic values
+            $gdp = max(0.1, round((1000 + ($seed % 4000)) / 1000, 2)); // 0.1 to 5.0 Trillion
+            $inflation = max(0.5, round(2 + (($seed % 150) - 75) / 10, 1)); // -5.5 to 9.5 %
+            $risk = max(10, min(90, 30 + ($seed % 50))); // 10 to 90 index
+            $weather = max(1, min(10, 2 + ($seed % 8))); // 1 to 10
+            $exchangeRate = max(0.5, round(10 + (($seed % 15000) - 7500) / 100, 2)); // Currency to USD
+            
+            // Some manual capital assignments for realism if matched, else fake
+            $capitals = ['DE' => 'Berlin', 'AU' => 'Canberra', 'US' => 'Washington D.C.', 'ID' => 'Jakarta', 'JP' => 'Tokyo', 'CN' => 'Beijing', 'SG' => 'Singapore', 'GB' => 'London'];
+            $capital = $capitals[$country->iso2] ?? ($country->name . ' City');
+            
+            $population = max(2, round(10 + ($seed % 200), 1)); // 2 to 210 Million
+            $efficiency = max(40, min(100, 60 + ($seed % 40))); // 40 to 100
 
-            if ($countries->isEmpty()) {
-                throw new Exception("Database negara kosong.");
-            }
-
-            foreach ($countries as $country) {
-                // Kalkulasi skor indikator skala 0 - 100 secara dinamis
-                // (Menggunakan fallback internal per negara jika kolom spesifik belum lengkap)
-                $efficiency = $country->efficiency_score ?? rand(65, 90);
-                $risk = $country->risk_score ?? rand(20, 60);
-                $currencyStability = ($country->currency_code === 'USD' || $country->currency_code === 'EUR') ? 90 : rand(45, 75);
-
-                $comparisonData[] = [
-                    'country_name' => $country->name,
-                    'currency_code' => $country->currency_code ?? 'N/A',
-                    'port_count' => $country->ports->count() ?? rand(1, 5),
-                    'efficiency_score' => (int) $efficiency,
-                    'risk_score' => (int) $risk,
-                    'currency_stability' => (int) $currencyStability
-                ];
-            }
-        } catch (Exception $e) {
-            // =======================================================
-            // FALLBACK ENGINE (DATA CADANGAN KOMPARASI ANTI-CRASH)
-            // =======================================================
-            $comparisonData = [
-                [
-                    'country_name' => 'Indonesia',
-                    'currency_code' => 'IDR',
-                    'port_count' => 4,
-                    'efficiency_score' => 78,
-                    'risk_score' => 45,
-                    'currency_stability' => 60
+            return [
+                'name' => $country->name,
+                'iso2' => $country->iso2,
+                'currency' => $country->currency_code ?? 'USD',
+                'capital' => $capital,
+                'population' => $population . ' M',
+                'data' => [
+                    'gdp' => $gdp,
+                    'inflation' => $inflation,
+                    'risk' => $risk,
+                    'weather' => $weather,
+                    'exchange' => $exchangeRate,
+                    'efficiency' => $efficiency
                 ],
-                [
-                    'country_name' => 'Singapore',
-                    'currency_code' => 'SGD',
-                    'port_count' => 2,
-                    'efficiency_score' => 95,
-                    'risk_score' => 12,
-                    'currency_stability' => 88
-                ],
-                [
-                    'country_name' => 'Netherlands',
-                    'currency_code' => 'EUR',
-                    'port_count' => 3,
-                    'efficiency_score' => 91,
-                    'risk_score' => 15,
-                    'currency_stability' => 90
-                ],
-                [
-                    'country_name' => 'United States',
-                    'currency_code' => 'USD',
-                    'port_count' => 5,
-                    'efficiency_score' => 88,
-                    'risk_score' => 18,
-                    'currency_stability' => 95
-                ]
+                'raw_data' => [$gdp, $inflation, $risk, $weather, $exchangeRate, $efficiency]
             ];
-        }
+        };
+
+        $comparisonData = [
+            'metrics' => [
+                'GDP (Trillion USD)', 
+                'Inflasi (%)', 
+                'Skor Risiko (0-100)', 
+                'Suhu/Cuaca (Disruption 0-10)', 
+                'Nilai Tukar (vs USD)',
+                'Nilai Pasok (Efficiency 0-100)'
+            ],
+            'countries' => [
+                $generateData($country1),
+                $generateData($country2)
+            ]
+        ];
 
         return $comparisonData;
     }

@@ -796,7 +796,7 @@
                 <table class="cc-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No.</th>
                             <th>Nama</th>
                             <th>Email</th>
                             <th>Role</th>
@@ -827,7 +827,7 @@
                 <table class="cc-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No.</th>
                             <th>Pelabuhan</th>
                             <th>Kode</th>
                             <th>Negara</th>
@@ -858,7 +858,7 @@
                 <table class="cc-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No.</th>
                             <th>Judul Artikel</th>
                             <th>Slug</th>
                             <th>Penulis</th>
@@ -1065,9 +1065,9 @@
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--gray-400);">Tidak ada pengguna ditemukan.</td></tr>`;
             return;
         }
-        tbody.innerHTML = users.map(u => `
+        tbody.innerHTML = users.map((u, index) => `
             <tr>
-                <td>#${u.id}</td>
+                <td>${index + 1}</td>
                 <td>
                     <div class="cc-user-cell">
                         <div class="cc-avatar">${u.name.substring(0, 2).toUpperCase()}</div>
@@ -1208,9 +1208,9 @@
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--gray-400);">Tidak ada pelabuhan ditemukan.</td></tr>`;
             return;
         }
-        tbody.innerHTML = ports.map(p => `
+        tbody.innerHTML = ports.map((p, index) => `
             <tr>
-                <td>#${p.id}</td>
+                <td>${index + 1}</td>
                 <td><strong>${p.port_name}</strong></td>
                 <td><code style="background:var(--gray-100); color:var(--violet-700); padding:2px 6px; border-radius:4px;">${p.port_code || '-'}</code></td>
                 <td>${p.country_name}</td>
@@ -1326,9 +1326,9 @@
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--gray-400);">Tidak ada artikel ditemukan.</td></tr>`;
             return;
         }
-        tbody.innerHTML = articles.map(a => `
+        tbody.innerHTML = articles.map((a, index) => `
             <tr>
-                <td>#${a.id}</td>
+                <td>${index + 1}</td>
                 <td><strong>${a.title}</strong></td>
                 <td><code style="background:var(--gray-100); color:var(--violet-700); padding:2px 6px; border-radius:4px;">${a.slug}</code></td>
                 <td>${a.author_name}</td>
@@ -1421,5 +1421,30 @@
             }
         });
     }
+
+    // Real-time polling
+    let activeInterval = null;
+
+    function startRealTimePolling(tabName) {
+        if (activeInterval) clearInterval(activeInterval);
+        
+        activeInterval = setInterval(() => {
+            if (tabName === 'users') loadUsers();
+            if (tabName === 'ports') loadPorts();
+            if (tabName === 'articles') loadArticles();
+            if (tabName === 'dashboard') loadOverview();
+        }, 5000); // Polling every 5 seconds for real-time feel
+    }
+
+    // Modified switchTab to include polling
+    const originalSwitchTab = switchTab;
+    switchTab = function(tabName) {
+        originalSwitchTab(tabName);
+        startRealTimePolling(tabName);
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        startRealTimePolling('dashboard');
+    });
 </script>
 @endsection

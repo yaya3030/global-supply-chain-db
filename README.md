@@ -1,59 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌍 Global Supply Chain Risk Intelligence (LogisticsCtrl)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-## About Laravel
+**LogisticsCtrl** adalah sebuah platform aplikasi web komprehensif berbasis **Laravel** yang dirancang untuk memantau, menganalisis, dan memvisualisasikan berbagai risiko dalam rantai pasokan global (*Global Supply Chain*). Aplikasi ini mensimulasikan dampak dari cuaca, inflasi, nilai tukar mata uang, kemacetan pelabuhan, dan sentimen geopolitik terhadap keputusan logistik dan rute pengiriman.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Aplikasi ini memiliki berbagai dasbor analitik interaktif yang memproses data dari lebih dari 200 negara dan pelabuhan secara *real-time*:
 
-## Learning Laravel
+1. 📊 **Global Pulse Dashboard**
+   - Ringkasan KPI (Populasi, GDP, Inflasi, Nilai Tukar).
+   - Pemetaan interaktif dan tren risiko secara umum.
+2. 🛡️ **Risk Scoring Engine**
+   - Algoritma perhitungan skor risiko berbasis 4 komponen utama: *Weather*, *Inflation*, *Exchange Rate*, dan *News Sentiment*.
+3. 🌩️ **Global Weather Monitor**
+   - Peta cuaca dunia interaktif (menggunakan **Leaflet.js**) untuk melacak titik hujan, badai (*storm*), angin kencang, beserta panduan status navigasi kapal.
+4. ⚖️ **Import Analyzer (Decision Support)**
+   - Fitur unggulan untuk mensimulasikan keputusan impor antar pelabuhan (Negara Asal ➡️ Negara Tujuan).
+   - Mengkalkulasi 5 Pilar Risiko Utama: Cuaca, Nilai Tukar, Geopolitik, Kemacetan Pelabuhan, dan Inflasi, untuk memberikan rekomendasi keputusan akhir.
+5. 🔄 **Country Comparison**
+   - Dasbor visual untuk membandingkan matriks ekonomi dan risiko secara *head-to-head* antara dua negara (misal: Germany vs Australia).
+6. 📈 **Data Visualization Dashboard**
+   - Representasi grafik komprehensif menggunakan **Chart.js** untuk melihat tren GDP, Inflasi, Nilai Tukar, dan Tren Risiko secara global.
+7. ⭐ **Favorite Monitoring (Watchlist)**
+   - Kemampuan bagi *user* untuk menyimpan dan memantau secara khusus negara-negara tertentu yang menjadi prioritas.
+8. 🛠️ **Admin Dashboard**
+   - Panel manajemen data (CRUD) untuk entitas *Users*, *Ports*, dan *Articles* dengan dukungan *polling real-time* agar tabel selalu sinkron secara otomatis.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 💻 Teknologi yang Digunakan
 
-## Laravel Sponsors
+- **Backend Framework:** Laravel (PHP)
+- **Frontend Engine:** Laravel Blade Templates
+- **Styling:** Native/Vanilla CSS (Desain Modern, *Glassmorphism*, *Card-based layout*)
+- **Interaktivitas:** Vanilla JavaScript (Fetch API, DOM Manipulation)
+- **Data Visualization:** Chart.js
+- **Interactive Maps:** Leaflet.js & CartoDB Maps
+- **Icons:** Tabler Icons
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🚀 Cara Instalasi & Menjalankan Proyek
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di *local environment* Anda:
 
-## Contributing
+### 1. Kloning Repositori (Jika menggunakan Git)
+```bash
+git clone <url-repo-anda>
+cd global-supply-chain-dashboard
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Instalasi Dependensi
+Pastikan Anda sudah menginstal **Composer** dan **Node.js/NPM**.
+```bash
+composer install
+npm install
+npm run build
+```
 
-## Code of Conduct
+### 3. Konfigurasi Database
+Salin file `.env.example` menjadi `.env`:
+```bash
+cp .env.example .env
+```
+Lalu, buka file `.env` dan sesuaikan pengaturan *database* Anda:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database_anda
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. *Generate Key* & Migrasi Database
+Jalankan perintah ini untuk membuat *application key* dan memigrasi struktur *database* beserta data awal (*seeder*):
+```bash
+php artisan key:generate
+php artisan migrate --seed
+```
 
-## Security Vulnerabilities
+### 5. Jalankan Aplikasi
+Jalankan *server* lokal Laravel:
+```bash
+php artisan serve
+```
+Akses aplikasi melalui browser di: **`http://127.0.0.1:8000`**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🎨 UI/UX Design Note
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Aplikasi ini sangat mengedepankan nilai estetika (*Premium & Rich Aesthetics*). Hindari menggunakan UI *default* browser. Semua *cards*, tabel, formulir, dan tombol telah dibuat secara *custom* menggunakan properti CSS tingkat lanjut (`backdrop-filter`, `linear-gradient`, `box-shadow`) untuk menghasilkan pengalaman *dashboard* logistik setingkat *Enterprise*.
+
+---
+
+## 📄 Lisensi
+Proyek ini dikembangkan sebagai bagian dari UAS / Pembelajaran (Pemrograman Web 2). Bebas untuk dimodifikasi dan dikembangkan lebih lanjut.

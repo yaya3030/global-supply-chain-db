@@ -6,6 +6,7 @@ class FavoriteMonitoringDashboardController extends Controller
 {
     public function index()
     {
-        return view('favorite_monitoring_dashboard');
+        $countries = \App\Models\Country::orderBy('name', 'asc')->get();
+        return view('favorite_monitoring_dashboard', compact('countries'));
     }
 }

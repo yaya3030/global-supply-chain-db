@@ -11,6 +11,7 @@ class CountryComparisonDashboardController extends Controller
      */
     public function index()
     {
-        return view('country_comparison_dashboard');
+        $countries = \App\Models\Country::orderBy('name', 'asc')->get();
+        return view('country_comparison_dashboard', compact('countries'));
     }
 }
