@@ -5,9 +5,19 @@
 
 @section('content')
 <div class="dashboard-page">
-    <div class="page-header">
-        <h1 class="page-title">Risk Scoring Engine</h1>
-        <p class="page-subtitle">Multi-dimensional supply chain risk analytics across monitored countries</p>
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h1 class="page-title">Risk Scoring Engine</h1>
+            <p class="page-subtitle">Multi-dimensional supply chain risk analytics across monitored countries</p>
+        </div>
+        <div style="display:flex; gap:12px;">
+            <a href="{{ route('report.pdf') }}" class="btn-hero-primary" style="padding:10px 16px; font-size:13px; text-decoration:none; color:white; background:linear-gradient(135deg, var(--violet-500), var(--violet-600)); border-radius:8px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 10px rgba(139, 92, 246, 0.3);">
+                <i class="ti ti-file-type-pdf"></i> Download PDF
+            </a>
+            <a href="{{ route('report.excel') }}" class="btn-hero-primary" style="padding:10px 16px; font-size:13px; text-decoration:none; color:white; background:linear-gradient(135deg, #10b981, #059669); border-radius:8px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 10px rgba(16, 185, 129, 0.3);">
+                <i class="ti ti-file-spreadsheet"></i> Download Excel
+            </a>
+        </div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">

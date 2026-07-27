@@ -20,17 +20,17 @@
         }
 
         :root {
-            --violet-50: #f5f3ff;
-            --violet-100: #ede9fe;
-            --violet-200: #ddd6fe;
-            --violet-300: #c4b5fd;
-            --violet-400: #a78bfa;
-            --violet-500: #8b5cf6;
-            --violet-600: #7c3aed;
-            --violet-700: #6d28d9;
-            --violet-800: #5b21b6;
-            --violet-900: #4c1d95;
-            --violet-950: #2e1065;
+            --violet-50: #fdf2f8;
+            --violet-100: #fce7f3;
+            --violet-200: #fbcfe8;
+            --violet-300: #f9a8d4;
+            --violet-400: #f472b6;
+            --violet-500: #ec4899;
+            --violet-600: #db2777;
+            --violet-700: #be185d;
+            --violet-800: #9d174d;
+            --violet-900: #831843;
+            --violet-950: #500724;
         }
 
         html {
@@ -61,7 +61,7 @@
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+            border-bottom: 1px solid rgba(236, 72, 153, 0.08);
             transition: all 0.3s ease;
         }
 
@@ -85,7 +85,7 @@
             justify-content: center;
             color: white;
             font-size: 18px;
-            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 2px 10px rgba(236, 72, 153, 0.3);
         }
 
         .nav-logo-text {
@@ -125,12 +125,12 @@
             font-size: 14px;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.25);
+            box-shadow: 0 2px 10px rgba(236, 72, 153, 0.25);
         }
 
         .nav-cta:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.35);
         }
 
         /* ===== HERO ===== */
@@ -150,9 +150,9 @@
             inset: 0;
             background:
                 linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.7)),
-                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(219, 39, 119, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(244, 114, 182, 0.05) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -160,8 +160,8 @@
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(139, 92, 246, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(139, 92, 246, 0.04) 1px, transparent 1px);
+                linear-gradient(rgba(236, 72, 153, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(236, 72, 153, 0.04) 1px, transparent 1px);
             background-size: 60px 60px;
             pointer-events: none;
             mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
@@ -298,7 +298,7 @@
             font-family: 'Inter', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -307,7 +307,7 @@
 
         .btn-hero-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 30px rgba(236, 72, 153, 0.4);
         }
 
         .btn-hero-secondary {
@@ -521,7 +521,7 @@
         .cta-bg {
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, rgba(139,92,246,0.04) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(236,72,153,0.04) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -681,9 +681,15 @@
         </div>
         <div class="nav-links">
             <a href="#features" class="nav-link-item">Features</a>
-            <a href="{{ url('/dashboard') }}" class="nav-cta">
+            @auth
+            <a href="{{ route('dashboard') }}" class="nav-cta">
                 Open Dashboard <i class="ti ti-arrow-right" style="font-size: 16px;"></i>
             </a>
+            @else
+            <a href="{{ route('login') }}" class="nav-cta">
+                Sign In <i class="ti ti-login" style="font-size: 16px;"></i>
+            </a>
+            @endauth
         </div>
     </nav>
 
@@ -707,9 +713,15 @@
                 Monitor real-time logistics data, weather disruptions, currency impacts, and risk scores across international supply chain hubs — all in one powerful dashboard.
             </p>
             <div class="hero-actions">
-                <a href="{{ url('/dashboard') }}" class="btn-hero-primary">
+                @auth
+                <a href="{{ route('dashboard') }}" class="btn-hero-primary">
                     <i class="ti ti-layout-dashboard"></i> Enter Dashboard
                 </a>
+                @else
+                <a href="{{ route('login') }}" class="btn-hero-primary">
+                    <i class="ti ti-login"></i> Sign In to Dashboard
+                </a>
+                @endauth
                 <a href="#features" class="btn-hero-secondary">
                     <i class="ti ti-sparkles"></i> Explore Features
                 </a>
@@ -784,9 +796,15 @@
         <div class="cta-content reveal">
             <h2 class="cta-title">Ready to Take Control?</h2>
             <p class="cta-desc">Access your global supply chain intelligence dashboard and start making data-driven decisions today.</p>
-            <a href="{{ url('/dashboard') }}" class="btn-hero-primary">
+            @auth
+            <a href="{{ route('dashboard') }}" class="btn-hero-primary">
                 <i class="ti ti-rocket"></i> Launch Dashboard
             </a>
+            @else
+            <a href="{{ route('login') }}" class="btn-hero-primary">
+                <i class="ti ti-login"></i> Sign In
+            </a>
+            @endauth
         </div>
     </section>
 

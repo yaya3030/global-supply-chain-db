@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\GlobalWeatherController;
 use App\Http\Controllers\Api\CurrencyImpactController;
 use App\Http\Controllers\Api\NewsIntelligenceController;
 use App\Http\Controllers\Api\PortLocationController;
+use App\Http\Controllers\Api\ShippingRouteController;
+use App\Http\Controllers\Api\GoodsController;
 use App\Http\Controllers\Api\DataVisualizationController;
 use App\Http\Controllers\Api\CountryComparisonController;
 use App\Http\Controllers\Api\FavoriteMonitoringController;
@@ -42,6 +44,8 @@ Route::get('/global-weather-status', [GlobalWeatherController::class, 'getWeathe
 Route::get('/currency-impact-analysis', [CurrencyImpactController::class, 'getImpactAnalysis']);
 Route::get('/news-intelligence', [NewsIntelligenceController::class, 'getNewsAnalytics']);
 Route::get('/port-locations', [PortLocationController::class, 'getLocations']);
+Route::get('/port-goods/{port_id}', [GoodsController::class, 'getGoodsByPort']);
+Route::get('/shipping-routes', [ShippingRouteController::class, 'getRoutes']);
 Route::get('/data-visualization-metrics', [DataVisualizationController::class, 'getMetrics']);
 Route::get('/country-comparison-data', [CountryComparisonController::class, 'getComparisonMetrics']);
 Route::get('/favorite-monitoring', [FavoriteMonitoringController::class, 'getFavorites']);

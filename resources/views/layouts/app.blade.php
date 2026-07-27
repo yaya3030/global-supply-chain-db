@@ -89,18 +89,26 @@
                 <i class="ti ti-star"></i> Favorites
             </a>
 
+            @if(auth()->check() && auth()->user()->role === 'admin')
             <a href="{{ route('admin.index') }}" class="nav-item {{ request()->routeIs('admin.*') ? 'active' : '' }}">
-                <i class="ti ti-settings-cog"></i> Admin Panel
+                <i class="ti ti-settings-cog"></i> Admin Dashboard
             </a>
+            @endif
         </nav>
 
         <div class="sidebar-footer">
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">A</div>
+            <div class="sidebar-user" style="display:flex; align-items:center;">
+                <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</div>
                 <div class="sidebar-user-info">
-                    <span class="sidebar-user-name">Admin User</span>
-                    <span class="sidebar-user-role">Operator</span>
+                    <span class="sidebar-user-name">{{ auth()->user()->name ?? 'Guest' }}</span>
+                    <span class="sidebar-user-role">{{ ucfirst(auth()->user()->role ?? 'User') }}</span>
                 </div>
+                <form action="{{ route('logout') }}" method="POST" style="margin-left:auto;">
+                    @csrf
+                    <button type="submit" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; padding:5px;" title="Logout">
+                        <i class="ti ti-logout" style="font-size:18px;"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </aside>
@@ -122,7 +130,8 @@
             <div class="topbar-right">
                 <div class="topbar-search">
                     <i class="ti ti-search"></i>
-                    <input type="text" placeholder="Search anything..." />
+                    <input type="text" id="globalSearchInput" placeholder="Search menu (e.g. Weather)..." autocomplete="off" />
+                    <div id="globalSearchDropdown" class="search-dropdown-menu"></div>
                 </div>
                 <div class="topbar-clock" id="topbarClock">--:--</div>
                 <div class="topbar-notification">
@@ -178,6 +187,82 @@
     }
     updateClock();
     setInterval(updateClock, 1000);
+    // Ripple Effect Logic
+    function createRipple(event) {
+        const button = event.currentTarget;
+        const circle = document.createElement("span");
+        const diameter = Math.max(button.clientWidth, button.clientHeight);
+        const radius = diameter / 2;
+
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+        circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+        circle.classList.add("ripple-effect");
+
+        const ripple = button.getElementsByClassName("ripple-effect")[0];
+        if (ripple) {
+            ripple.remove();
+        }
+
+        button.appendChild(circle);
+    }
+
+    // Attach Ripple to buttons and nav items
+    document.addEventListener('DOMContentLoaded', () => {
+        const rippleElements = document.querySelectorAll('.nav-item, .btn, .stat-card, .sidebar-user');
+        rippleElements.forEach(el => {
+            el.classList.add('ripple-container');
+            // For lighter elements like stat-card, we want a dark ripple
+            if(el.classList.contains('stat-card') || el.classList.contains('btn-light')) {
+                el.classList.add('ripple-dark');
+            }
+            el.addEventListener('mousedown', createRipple);
+        });
+
+        // Global Quick Navigation Search
+        const searchInput = document.getElementById('globalSearchInput');
+        const searchDropdown = document.getElementById('globalSearchDropdown');
+        
+        // Extract all navigation items
+        const navItems = Array.from(document.querySelectorAll('.sidebar-nav .nav-item')).map(el => {
+            return {
+                name: el.textContent.trim(),
+                url: el.getAttribute('href'),
+                icon: el.querySelector('i').className
+            };
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (query === '') {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            const results = navItems.filter(item => item.name.toLowerCase().includes(query));
+            
+            searchDropdown.innerHTML = '';
+            if (results.length > 0) {
+                results.forEach(item => {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.className = 'search-dropdown-item';
+                    a.innerHTML = `<i class="${item.icon}"></i> ${item.name}`;
+                    searchDropdown.appendChild(a);
+                });
+            } else {
+                searchDropdown.innerHTML = '<div class="search-dropdown-empty">No menus found</div>';
+            }
+            searchDropdown.style.display = 'block';
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.style.display = 'none';
+            }
+        });
+    });
 </script>
 
 @yield('extra_scripts')

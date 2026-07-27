@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
         'Germany': [51.1657, 10.4515],
         'China': [35.8617, 104.1954],
         'Indonesia': [-0.7893, 113.9213],
-        'Australia': [-25.2744, 133.7751]
+        'Australia': [-25.2744, 133.7751],
+        'Singapore': [1.3521, 103.8198],
+        'United States': [37.0902, -95.7129]
     };
 
     let map, marker;
@@ -31,7 +33,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateMap(country, coords) {
-        const latlng = coords || fallbackCoords[country] || [0, 0];
+        let latlng = (coords && typeof coords[0] === 'number' && typeof coords[1] === 'number') ? coords : null;
+        if (!latlng || (latlng[0] === 0 && latlng[1] === 0)) {
+            latlng = fallbackCoords[country] || [15, 20];
+        }
         if (marker) map.removeLayer(marker);
         marker = L.marker(latlng, { 
             icon: L.icon({
@@ -227,7 +232,9 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('v-risk').textContent = `${data.risk?.score ?? '-'} (${data.risk?.level ?? '-'})`;
 
             // Update Peta & Chart dengan smooth transition
-            updateMap(country, data.weather?.lat && data.weather?.lng ? [data.weather.lat, data.weather.lng] : null);
+            const validLat = data.weather && typeof data.weather.lat === 'number';
+            const validLng = data.weather && typeof data.weather.lng === 'number';
+            updateMap(country, (validLat && validLng) ? [data.weather.lat, data.weather.lng] : null);
             updateChart(data.trend?.labels || [], data.trend?.values || []);
             renderNews(data.news || []);
 
@@ -245,30 +252,141 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // 7. Event Listeners dengan smooth transitions
-    document.querySelectorAll('.ctab').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            const selectedCountry = this.dataset.country;
+    // 7. Event Listeners (Event delegation for 250 country tabs)
+    const tabsContainer = document.getElementById('countryTabs');
+    if (tabsContainer) {
+        tabsContainer.addEventListener('click', function (e) {
+            const btn = e.target.closest('.ctab');
+            if (!btn) return;
 
-            // Sync state with realtime script to prevent it from polling the wrong country
+            document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const selectedCountry = btn.dataset.country;
+
+            // Sync state with realtime script
             if (window.dashboardRealtime) {
                 window.dashboardRealtime.currentCountry = selectedCountry;
             }
             
             // Add smooth transition
             const dashboardPage = document.querySelector('.dashboard-page');
-            dashboardPage.style.opacity = '0.8';
+            if (dashboardPage) dashboardPage.style.opacity = '0.8';
             
             loadCountryData(selectedCountry);
             
             setTimeout(() => {
-                dashboardPage.style.opacity = '1';
+                if (dashboardPage) dashboardPage.style.opacity = '1';
             }, 300);
         });
-    });
+    }
+
+    // 8. LIVE SEARCH & FILTER UNTUK 250 NEGARA
+    let allDbCountries = window.DASHBOARD_ALL_COUNTRIES || [];
+
+    if (allDbCountries.length === 0) {
+        fetch('/api/countries-summary')
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+                if (result.status === 'success') {
+                    allDbCountries = result.data.map(function(c) { return c.name; });
+                }
+            })
+            .catch(function() {});
+    }
+
+    const searchInput = document.getElementById('countrySearch');
+    const searchDropdown = document.getElementById('searchDropdown');
+    const searchResults = document.getElementById('searchResults');
+
+    if (searchInput && searchDropdown && searchResults) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+
+            // Filter tab buttons live
+            const allTabs = document.querySelectorAll('#countryTabs .ctab');
+            allTabs.forEach(tab => {
+                const cName = (tab.dataset.country || tab.textContent).toLowerCase();
+                if (!q || cName.indexOf(q) !== -1) {
+                    tab.style.display = 'inline-block';
+                } else {
+                    tab.style.display = 'none';
+                }
+            });
+
+            if (q.length < 1) {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            var matches = allDbCountries.filter(function(name) {
+                return name.toLowerCase().indexOf(q) !== -1;
+            }).slice(0, 10);
+
+            if (matches.length === 0) {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            searchResults.innerHTML = '';
+            matches.forEach(function(name) {
+                var item = document.createElement('div');
+                item.style.cssText = 'padding:8px 14px; cursor:pointer; font-size:13px; color:#1e293b; border-bottom:1px solid #f1f5f9; transition:background 0.15s;';
+                item.textContent = name;
+                item.addEventListener('mouseenter', function() { this.style.background = '#f5f3ff'; });
+                item.addEventListener('mouseleave', function() { this.style.background = ''; });
+                item.addEventListener('click', function() {
+                    selectSearchCountry(name);
+                    searchInput.value = '';
+                    searchDropdown.style.display = 'none';
+                    // Reset tab visibility
+                    document.querySelectorAll('#countryTabs .ctab').forEach(t => t.style.display = 'inline-block');
+                });
+                searchResults.appendChild(item);
+            });
+            searchDropdown.style.display = 'block';
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                searchDropdown.style.display = 'none';
+            }
+        });
+    }
+
+    function selectSearchCountry(name) {
+        var existingTab = document.querySelector('.ctab[data-country="' + name + '"]');
+        if (existingTab) {
+            existingTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            existingTab.click();
+            return;
+        }
+
+        var tabsContainer = document.getElementById('countryTabs');
+        if (!tabsContainer) return;
+        
+        var prevDynamic = tabsContainer.querySelector('.ctab-dynamic');
+        if (prevDynamic) prevDynamic.remove();
+
+        var newTab = document.createElement('button');
+        newTab.type = 'button';
+        newTab.className = 'ctab ctab-dynamic active';
+        newTab.dataset.country = name;
+        newTab.textContent = name;
+        newTab.style.cssText = 'background:linear-gradient(135deg,#7c3aed,#5b21b6); color:white; border-color:#7c3aed;';
+        tabsContainer.appendChild(newTab);
+
+        document.querySelectorAll('.ctab:not(.ctab-dynamic)').forEach(function(b) {
+            b.classList.remove('active');
+        });
+
+        if (window.dashboardRealtime) window.dashboardRealtime.currentCountry = name;
+
+        var dashboardPage = document.querySelector('.dashboard-page');
+        if (dashboardPage) dashboardPage.style.opacity = '0.8';
+        loadCountryData(name);
+        setTimeout(function() { if (dashboardPage) dashboardPage.style.opacity = '1'; }, 300);
+    }
 
     // Inisialisasi awal
     initMap();

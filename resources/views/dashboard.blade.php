@@ -8,8 +8,8 @@
     <!-- Dashboard Header -->
     <div class="dashboard-header">
         <div class="header-left">
-            <h1 class="page-title">Global Pulse</h1>
-            <p class="page-subtitle">Real-time supply chain intelligence overview</p>
+            <h1 class="page-title">Global Nexus</h1>
+            <p class="page-subtitle">Supply chain and economic intelligence.</p>
         </div>
         <div class="header-right">
             <div class="search-box-container">
@@ -22,8 +22,8 @@
         </div>
     </div>
 
-    <!-- Country Tabs -->
-    <div class="country-tabs mb-3" id="countryTabs">
+    <!-- Country Tabs (All 250 Countries) -->
+    <div class="country-tabs mb-3" id="countryTabs" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 140px; overflow-y: auto; padding: 10px; border: 1px solid var(--gray-200); border-radius: 14px; background: white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
         @foreach($countries as $c)
             <button type="button" class="ctab {{ $loop->first ? 'active' : '' }}" data-country="{{ $c }}">{{ $c }}</button>
         @endforeach
@@ -106,6 +106,7 @@
 
 <script>
     window.DASHBOARD_COUNTRIES = @json($countries);
+    window.DASHBOARD_ALL_COUNTRIES = @json($allCountries ?? []);
     window.DASHBOARD_API_BASE = "{{ url('/api') }}";
 </script>
 <script src="{{ asset('js/dashboard.js') }}"></script>
