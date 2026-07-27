@@ -14,7 +14,8 @@
         "maatwebsite/excel": "^3.1",
         "ext-gd": "*",
         "ext-intl": "*",
-        "ext-exif": "*"
+        "ext-exif": "*",
+        "ext-zip": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
