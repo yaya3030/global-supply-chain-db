@@ -14,40 +14,67 @@
         font-family: 'Inter', sans-serif;
     }
 
-    /* Left Dark Sidebar */
+    /* Left Control Center Sidebar - Matching Primary App Shell Gradient */
     .cc-sidebar {
         width: 240px;
         flex-shrink: 0;
-        background: #111827;
-        border-radius: 16px;
+        background: linear-gradient(180deg, var(--violet-950) 0%, var(--violet-900) 100%);
+        border-radius: var(--radius-lg);
         padding: 24px 16px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(236, 72, 153, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Subtle ambient shimmer overlay */
+    .cc-sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 180px;
+        background: radial-gradient(ellipse at 30% 0%, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+        pointer-events: none;
     }
 
     .cc-sidebar-brand {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         color: #ffffff;
         font-size: 1.1rem;
-        font-weight: 700;
+        font-weight: 800;
         padding-bottom: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
     }
 
-    .cc-sidebar-brand i {
-        color: #3b82f6;
-        font-size: 1.3rem;
+    .cc-sidebar-brand-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, var(--violet-500) 0%, var(--violet-600) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: white;
+        box-shadow: var(--shadow-violet);
     }
 
     .cc-sidebar-menu {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
+        position: relative;
+        z-index: 1;
     }
 
     .cc-menu-item {
@@ -55,13 +82,13 @@
         align-items: center;
         gap: 12px;
         padding: 12px 16px;
-        border-radius: 12px;
-        color: #9ca3af;
+        border-radius: var(--radius-md);
+        color: rgba(255, 255, 255, 0.7);
         font-weight: 500;
         font-size: 0.92rem;
         text-decoration: none;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all var(--transition-base);
         border: none;
         background: transparent;
         width: 100%;
@@ -70,41 +97,44 @@
 
     .cc-menu-item:hover {
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(2px);
     }
 
     .cc-menu-item.active {
-        background: #4f46e5;
+        background: linear-gradient(135deg, var(--violet-600) 0%, var(--violet-700) 100%);
         color: #ffffff;
         font-weight: 600;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        box-shadow: 0 4px 14px rgba(219, 39, 119, 0.35);
     }
 
     .cc-menu-item i {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
     }
 
     .cc-sidebar-footer {
         padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 1;
     }
 
     .cc-btn-back {
         display: flex;
         align-items: center;
         gap: 10px;
-        color: #9ca3af;
+        color: var(--violet-200);
         font-size: 0.9rem;
-        font-weight: 500;
+        font-weight: 600;
         text-decoration: none;
-        padding: 10px 12px;
-        border-radius: 8px;
-        transition: all 0.2s;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        transition: all var(--transition-base);
     }
 
     .cc-btn-back:hover {
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.1);
     }
 
     /* Main Content Area */
@@ -123,15 +153,15 @@
     .cc-header-title {
         font-size: 1.65rem;
         font-weight: 800;
-        color: #111827;
+        color: var(--gray-900);
         display: flex;
         align-items: center;
         gap: 10px;
-
+        letter-spacing: -0.5px;
     }
 
     .cc-header-subtitle {
-        color: #6b7280;
+        color: var(--gray-500);
         font-size: 0.95rem;
         margin-top: 4px;
     }
@@ -144,28 +174,35 @@
     }
 
     .cc-stat-card {
-        border-radius: 16px;
+        border-radius: var(--radius-lg);
         padding: 24px;
         color: #ffffff;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         min-height: 140px;
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .cc-stat-card:hover {
+        transform: translateY(-2px);
     }
 
     .cc-stat-card.purple {
-        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        background: linear-gradient(135deg, var(--violet-600) 0%, var(--violet-700) 100%);
+        box-shadow: var(--shadow-violet);
     }
 
     .cc-stat-card.blue {
-        background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
     }
 
     .cc-stat-card.amber {
         background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
     }
 
     .cc-stat-top {
@@ -179,20 +216,21 @@
         font-weight: 800;
         letter-spacing: 0.6px;
         text-transform: uppercase;
-        opacity: 0.9;
+        opacity: 0.92;
     }
 
     .cc-stat-val {
-        font-size: 2.3rem;
+        font-size: 2.4rem;
         font-weight: 800;
         margin-top: 6px;
         line-height: 1;
+        letter-spacing: -1px;
     }
 
     .cc-stat-icon {
         width: 48px;
         height: 48px;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(8px);
         display: flex;
@@ -203,9 +241,10 @@
     }
 
     .cc-stat-subtext {
-        font-size: 0.8rem;
-        opacity: 0.85;
+        font-size: 0.82rem;
+        opacity: 0.88;
         margin-top: 14px;
+        font-weight: 500;
     }
 
     /* Main Grid Layout */
@@ -217,10 +256,10 @@
 
     .cc-card {
         background: #ffffff;
-        border-radius: 16px;
-        border: 1px solid #e5e7eb;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
         padding: 24px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+        box-shadow: var(--shadow-sm);
     }
 
     .cc-card-header {
@@ -233,27 +272,30 @@
     .cc-card-title {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #111827;
+        color: var(--gray-900);
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
     }
 
     .cc-card-title i {
-        color: #4f46e5;
+        color: var(--violet-600);
+        font-size: 1.25rem;
     }
 
     .cc-link-btn {
-        color: #3b82f6;
+        color: var(--violet-600);
         font-weight: 600;
         font-size: 0.88rem;
         text-decoration: none;
         background: transparent;
         border: none;
         cursor: pointer;
+        transition: color var(--transition-fast);
     }
 
     .cc-link-btn:hover {
+        color: var(--violet-800);
         text-decoration: underline;
     }
 
@@ -265,18 +307,20 @@
 
     .cc-table th {
         text-align: left;
-        padding: 10px 14px;
+        padding: 12px 14px;
         font-size: 0.82rem;
         font-weight: 700;
-        color: #4b5563;
-        border-bottom: 2px solid #f3f4f6;
+        color: var(--gray-600);
+        border-bottom: 2px solid var(--gray-100);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .cc-table td {
         padding: 14px;
         font-size: 0.88rem;
-        color: #1f2937;
-        border-bottom: 1px solid #f3f4f6;
+        color: var(--gray-800);
+        border-bottom: 1px solid var(--gray-100);
         vertical-align: middle;
     }
 
@@ -287,34 +331,37 @@
     }
 
     .cc-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: #dbeafe;
-        color: #1e40af;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        background: linear-gradient(135deg, var(--violet-400) 0%, var(--violet-600) 100%);
+        color: #ffffff;
         font-weight: 700;
         font-size: 0.85rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: var(--shadow-xs);
     }
 
     .cc-badge {
-        padding: 4px 10px;
-        border-radius: 9999px;
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
         font-size: 0.75rem;
-        font-weight: 600;
+        font-weight: 700;
         display: inline-block;
     }
 
     .cc-badge.user {
-        background: #f3f4f6;
-        color: #4b5563;
+        background: var(--gray-100);
+        color: var(--gray-700);
+        border: 1px solid var(--gray-200);
     }
 
     .cc-badge.admin {
-        background: #f3e8ff;
-        color: #7e22ce;
+        background: var(--violet-50);
+        color: var(--violet-700);
+        border: 1px solid var(--violet-200);
     }
 
     /* Quick Action Buttons */
@@ -327,7 +374,7 @@
     .cc-action-btn {
         width: 100%;
         padding: 14px 18px;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         background: #ffffff;
         font-weight: 600;
         font-size: 0.92rem;
@@ -335,38 +382,44 @@
         align-items: center;
         gap: 12px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all var(--transition-base);
         text-align: left;
     }
 
-    .cc-action-btn.blue {
-        border: 1.5px solid #bfdbfe;
-        color: #1d4ed8;
+    .cc-action-btn.violet {
+        border: 1.5px solid var(--violet-200);
+        color: var(--violet-700);
+        background: var(--violet-50);
     }
 
-    .cc-action-btn.blue:hover {
-        background: #eff6ff;
-        border-color: #3b82f6;
+    .cc-action-btn.violet:hover {
+        background: var(--violet-100);
+        border-color: var(--violet-400);
+        transform: translateY(-1px);
     }
 
     .cc-action-btn.green {
         border: 1.5px solid #bbf7d0;
         color: #15803d;
+        background: #f0fdf4;
     }
 
     .cc-action-btn.green:hover {
-        background: #f0fdf4;
+        background: #dcfce7;
         border-color: #22c55e;
+        transform: translateY(-1px);
     }
 
     .cc-action-btn.amber {
         border: 1.5px solid #fef08a;
         color: #b45309;
+        background: #fefce8;
     }
 
     .cc-action-btn.amber:hover {
-        background: #fefce8;
+        background: #fef9c3;
         border-color: #eab308;
+        transform: translateY(-1px);
     }
 
     .cc-action-btn i {
@@ -391,52 +444,57 @@
         gap: 16px;
         background: #ffffff;
         padding: 16px 20px;
-        border-radius: 14px;
-        border: 1px solid #e5e7eb;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-xs);
     }
 
     .cc-search-input {
-        padding: 8px 14px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        padding: 10px 16px;
+        border: 1.5px solid var(--gray-300);
+        border-radius: var(--radius-md);
         font-size: 0.9rem;
-        width: 280px;
+        width: 300px;
         outline: none;
+        transition: all var(--transition-fast);
     }
 
     .cc-search-input:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        border-color: var(--violet-500);
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
     }
 
     .cc-btn-primary {
-        background: #4f46e5;
+        background: linear-gradient(135deg, var(--violet-600) 0%, var(--violet-700) 100%);
         color: #ffffff;
         border: none;
-        padding: 10px 18px;
-        border-radius: 10px;
+        padding: 10px 20px;
+        border-radius: var(--radius-md);
         font-weight: 600;
         font-size: 0.88rem;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 8px;
-        transition: all 0.2s;
+        box-shadow: var(--shadow-violet);
+        transition: all var(--transition-base);
     }
 
     .cc-btn-primary:hover {
-        background: #4338ca;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-violet-lg);
     }
 
     .cc-btn-danger {
-        background: #ef4444;
+        background: var(--danger);
         color: #ffffff;
         border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
+        padding: 6px 14px;
+        border-radius: var(--radius-sm);
         font-size: 0.8rem;
+        font-weight: 600;
         cursor: pointer;
+        transition: background var(--transition-fast);
     }
 
     .cc-btn-danger:hover {
@@ -444,27 +502,29 @@
     }
 
     .cc-btn-edit {
-        background: #3b82f6;
+        background: var(--info);
         color: #ffffff;
         border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
+        padding: 6px 14px;
+        border-radius: var(--radius-sm);
         font-size: 0.8rem;
+        font-weight: 600;
         cursor: pointer;
         margin-right: 6px;
+        transition: background var(--transition-fast);
     }
 
     .cc-btn-edit:hover {
         background: #2563eb;
     }
 
-    /* Custom Modal */
+    /* Custom Modal Dialog */
     .cc-modal-backdrop {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(6px);
         z-index: 999;
         align-items: center;
         justify-content: center;
@@ -476,11 +536,12 @@
 
     .cc-modal {
         background: #ffffff;
-        border-radius: 16px;
+        border-radius: var(--radius-xl);
         width: 100%;
         max-width: 520px;
-        padding: 24px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        padding: 28px;
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--gray-200);
     }
 
     .cc-modal-header {
@@ -491,17 +552,22 @@
     }
 
     .cc-modal-title {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #111827;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--gray-900);
     }
 
     .cc-modal-close {
         background: transparent;
         border: none;
         font-size: 1.4rem;
-        color: #9ca3af;
+        color: var(--gray-400);
         cursor: pointer;
+        transition: color var(--transition-fast);
+    }
+
+    .cc-modal-close:hover {
+        color: var(--gray-700);
     }
 
     .cc-form-group {
@@ -511,44 +577,45 @@
     .cc-form-label {
         display: block;
         font-size: 0.85rem;
-        font-weight: 600;
-        color: #374151;
+        font-weight: 700;
+        color: var(--gray-700);
         margin-bottom: 6px;
     }
 
     .cc-form-control {
         width: 100%;
         padding: 10px 14px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        border: 1.5px solid var(--gray-300);
+        border-radius: var(--radius-md);
         font-size: 0.9rem;
         outline: none;
+        transition: all var(--transition-fast);
     }
 
     .cc-form-control:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        border-color: var(--violet-500);
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
     }
 
     /* Notification Alert */
     .cc-alert {
-        padding: 12px 16px;
-        border-radius: 10px;
-        font-size: 0.88rem;
-        font-weight: 500;
+        padding: 14px 18px;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 600;
         margin-bottom: 16px;
         display: none;
     }
 
     .cc-alert-success {
-        background: #ecfdf5;
-        color: #065f46;
+        background: var(--success-bg);
+        color: var(--success);
         border: 1px solid #a7f3d0;
     }
 
     .cc-alert-error {
-        background: #fef2f2;
-        color: #991b1b;
+        background: var(--danger-bg);
+        color: var(--danger);
         border: 1px solid #fecaca;
     }
 </style>
@@ -556,30 +623,36 @@
 
 @section('content')
 <div class="cc-wrapper">
-    <!-- LEFT SIDEBAR -->
+    <!-- LEFT SIDEBAR CONTROL CENTER -->
     <aside class="cc-sidebar">
         <div>
             <div class="cc-sidebar-brand">
-                <i class="ti ti-lock"></i> Control Center
+                <div class="cc-sidebar-brand-icon">
+                    <i class="ti ti-lock"></i>
+                </div>
+                <div>
+                    <div style="font-size: 15px; font-weight: 800; color: white;">Control Center</div>
+                    <div style="font-size: 10px; color: var(--violet-300); font-weight: 600; text-transform: uppercase;">Admin Portal</div>
+                </div>
             </div>
             <nav class="cc-sidebar-menu">
                 <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="cc-menu-item active">
-                    <i class="ti ti-chart-line"></i> Dashboard
+                    <i class="ti ti-layout-dashboard"></i> Dashboard
                 </button>
                 <button onclick="switchTab('users')" id="tab-btn-users" class="cc-menu-item">
-                    <i class="ti ti-users"></i> Users
+                    <i class="ti ti-users"></i> Kelola User
                 </button>
                 <button onclick="switchTab('ports')" id="tab-btn-ports" class="cc-menu-item">
-                    <i class="ti ti-ship"></i> Ports
+                    <i class="ti ti-anchor"></i> Dataset Pelabuhan
                 </button>
                 <button onclick="switchTab('articles')" id="tab-btn-articles" class="cc-menu-item">
-                    <i class="ti ti-news"></i> Articles
+                    <i class="ti ti-news"></i> Artikel Analisis
                 </button>
             </nav>
         </div>
         <div class="cc-sidebar-footer">
             <a href="{{ route('dashboard') }}" class="cc-btn-back">
-                <i class="ti ti-arrow-left"></i> Back to Main
+                <i class="ti ti-arrow-left"></i> Kembali ke Utama
             </a>
         </div>
     </aside>
@@ -593,7 +666,7 @@
         <div id="panel-dashboard" class="cc-panel active">
             <div class="cc-header">
                 <h1 class="cc-header-title">
-                    <i class="ti ti-chart-line-up" style="color: #4f46e5;"></i> Control Center Dashboard
+                    <i class="ti ti-adjustments-alt" style="color: var(--violet-600);"></i> Control Center Dashboard
                 </h1>
                 <p class="cc-header-subtitle">Overview status dan manajemen operasional sistem Supply Chain Risk Platform.</p>
             </div>
@@ -668,17 +741,17 @@
                                         <strong>{{ $user->name }}</strong>
                                     </div>
                                 </td>
-                                <td style="color: #ec4899; font-family: monospace;">{{ $user->email }}</td>
+                                <td style="color: var(--violet-600); font-family: monospace;">{{ $user->email }}</td>
                                 <td>
                                     <span class="cc-badge {{ strtolower($user->role) === 'admin' ? 'admin' : 'user' }}">
                                         {{ ucfirst($user->role) }}
                                     </span>
                                 </td>
-                                <td style="color: #6b7280;">{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</td>
+                                <td style="color: var(--gray-500);">{{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" style="text-align: center; color: #9ca3af; padding: 20px;">Belum ada pengguna.</td>
+                                <td colspan="4" style="text-align: center; color: var(--gray-400); padding: 20px;">Belum ada pengguna.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -689,11 +762,11 @@
                 <div class="cc-card">
                     <div class="cc-card-header">
                         <span class="cc-card-title">
-                            <i class="ti ti-settings"></i> Tindakan Cepat
+                            <i class="ti ti-subtask"></i> Tindakan Cepat
                         </span>
                     </div>
                     <div class="cc-actions-list">
-                        <button onclick="openUserModal()" class="cc-action-btn blue">
+                        <button onclick="openUserModal()" class="cc-action-btn violet">
                             <i class="ti ti-user-plus"></i> Tambah Pengguna Baru
                         </button>
                         <button onclick="openPortModal()" class="cc-action-btn green">
@@ -710,7 +783,7 @@
         <!-- TAB 2: USERS MANAGEMENT -->
         <div id="panel-users" class="cc-panel">
             <div class="cc-header">
-                <h1 class="cc-header-title"><i class="ti ti-users"></i> Kelola Pengguna</h1>
+                <h1 class="cc-header-title"><i class="ti ti-users" style="color: var(--violet-600);"></i> Kelola Pengguna</h1>
                 <p class="cc-header-subtitle">Manajemen daftar pengguna terdaftar, perbarui peran, atau tambah pengguna baru.</p>
             </div>
             <div class="cc-toolbar">
@@ -741,7 +814,7 @@
         <!-- TAB 3: PORTS MANAGEMENT -->
         <div id="panel-ports" class="cc-panel">
             <div class="cc-header">
-                <h1 class="cc-header-title"><i class="ti ti-ship"></i> Kelola Dataset Pelabuhan</h1>
+                <h1 class="cc-header-title"><i class="ti ti-anchor" style="color: var(--violet-600);"></i> Kelola Dataset Pelabuhan</h1>
                 <p class="cc-header-subtitle">Manajemen titik pelabuhan logistik internasional dalam sistem.</p>
             </div>
             <div class="cc-toolbar">
@@ -772,7 +845,7 @@
         <!-- TAB 4: ARTICLES MANAGEMENT -->
         <div id="panel-articles" class="cc-panel">
             <div class="cc-header">
-                <h1 class="cc-header-title"><i class="ti ti-news"></i> Kelola Artikel Analisis</h1>
+                <h1 class="cc-header-title"><i class="ti ti-news" style="color: var(--violet-600);"></i> Kelola Artikel Analisis</h1>
                 <p class="cc-header-subtitle">Manajemen artikel berita & publikasi analisis intelijen rantai pasok.</p>
             </div>
             <div class="cc-toolbar">
@@ -831,7 +904,7 @@
                 <input type="password" id="user-password" class="cc-form-control" placeholder="Minimal 6 karakter">
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
-                <button type="button" class="cc-action-btn" onclick="closeUserModal()" style="width: auto; border: 1px solid #d1d5db;">Batal</button>
+                <button type="button" class="cc-action-btn" onclick="closeUserModal()" style="width: auto; border: 1px solid var(--gray-300);">Batal</button>
                 <button type="submit" class="cc-btn-primary">Simpan Pengguna</button>
             </div>
         </form>
@@ -872,7 +945,7 @@
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
-                <button type="button" class="cc-action-btn" onclick="closePortModal()" style="width: auto; border: 1px solid #d1d5db;">Batal</button>
+                <button type="button" class="cc-action-btn" onclick="closePortModal()" style="width: auto; border: 1px solid var(--gray-300);">Batal</button>
                 <button type="submit" class="cc-btn-primary">Simpan Pelabuhan</button>
             </div>
         </form>
@@ -901,7 +974,7 @@
                 <textarea id="article-content" class="cc-form-control" rows="6" required placeholder="Tuliskan analisis berita di sini..."></textarea>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
-                <button type="button" class="cc-action-btn" onclick="closeArticleModal()" style="width: auto; border: 1px solid #d1d5db;">Batal</button>
+                <button type="button" class="cc-action-btn" onclick="closeArticleModal()" style="width: auto; border: 1px solid var(--gray-300);">Batal</button>
                 <button type="submit" class="cc-btn-primary">Terbitkan Artikel</button>
             </div>
         </form>
@@ -960,13 +1033,13 @@
                                         <strong>${u.name}</strong>
                                     </div>
                                 </td>
-                                <td style="color: #ec4899; font-family: monospace;">${u.email}</td>
+                                <td style="color: var(--violet-600); font-family: monospace;">${u.email}</td>
                                 <td>
                                     <span class="cc-badge ${u.role.toLowerCase() === 'admin' ? 'admin' : 'user'}">
                                         ${u.role.charAt(0).toUpperCase() + u.role.slice(1)}
                                     </span>
                                 </td>
-                                <td style="color: #6b7280;">${u.created_at}</td>
+                                <td style="color: var(--gray-500);">${u.created_at}</td>
                             </tr>
                         `).join('');
                     }
@@ -989,7 +1062,7 @@
     function renderUsersTable(users) {
         const tbody = document.getElementById('table-users-body');
         if (users.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#9ca3af;">Tidak ada pengguna ditemukan.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--gray-400);">Tidak ada pengguna ditemukan.</td></tr>`;
             return;
         }
         tbody.innerHTML = users.map(u => `
@@ -1001,13 +1074,13 @@
                         <strong>${u.name}</strong>
                     </div>
                 </td>
-                <td style="color: #ec4899; font-family: monospace;">${u.email}</td>
+                <td style="color: var(--violet-600); font-family: monospace;">${u.email}</td>
                 <td>
                     <span class="cc-badge ${u.role.toLowerCase() === 'admin' ? 'admin' : 'user'}">
                         ${u.role.charAt(0).toUpperCase() + u.role.slice(1)}
                     </span>
                 </td>
-                <td style="color: #6b7280;">${u.created_at}</td>
+                <td style="color: var(--gray-500);">${u.created_at}</td>
                 <td>
                     <button onclick="editUser(${u.id})" class="cc-btn-edit"><i class="ti ti-edit"></i> Edit</button>
                     <button onclick="deleteUser(${u.id})" class="cc-btn-danger"><i class="ti ti-trash"></i> Hapus</button>
@@ -1132,16 +1205,16 @@
     function renderPortsTable(ports) {
         const tbody = document.getElementById('table-ports-body');
         if (ports.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#9ca3af;">Tidak ada pelabuhan ditemukan.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--gray-400);">Tidak ada pelabuhan ditemukan.</td></tr>`;
             return;
         }
         tbody.innerHTML = ports.map(p => `
             <tr>
                 <td>#${p.id}</td>
                 <td><strong>${p.port_name}</strong></td>
-                <td><code style="background:#f3f4f6; padding:2px 6px; border-radius:4px;">${p.port_code || '-'}</code></td>
+                <td><code style="background:var(--gray-100); color:var(--violet-700); padding:2px 6px; border-radius:4px;">${p.port_code || '-'}</code></td>
                 <td>${p.country_name}</td>
-                <td style="color:#6b7280; font-family:monospace;">${p.latitude}, ${p.longitude}</td>
+                <td style="color:var(--gray-500); font-family:monospace;">${p.latitude}, ${p.longitude}</td>
                 <td>
                     <button onclick="editPort(${p.id})" class="cc-btn-edit"><i class="ti ti-edit"></i> Edit</button>
                     <button onclick="deletePort(${p.id})" class="cc-btn-danger"><i class="ti ti-trash"></i> Hapus</button>
@@ -1250,16 +1323,16 @@
     function renderArticlesTable(articles) {
         const tbody = document.getElementById('table-articles-body');
         if (articles.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#9ca3af;">Tidak ada artikel ditemukan.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--gray-400);">Tidak ada artikel ditemukan.</td></tr>`;
             return;
         }
         tbody.innerHTML = articles.map(a => `
             <tr>
                 <td>#${a.id}</td>
                 <td><strong>${a.title}</strong></td>
-                <td><code style="background:#f3f4f6; padding:2px 6px; border-radius:4px;">${a.slug}</code></td>
+                <td><code style="background:var(--gray-100); color:var(--violet-700); padding:2px 6px; border-radius:4px;">${a.slug}</code></td>
                 <td>${a.author_name}</td>
-                <td style="color:#6b7280;">${a.created_at}</td>
+                <td style="color:var(--gray-500);">${a.created_at}</td>
                 <td>
                     <button onclick="editArticle(${a.id})" class="cc-btn-edit"><i class="ti ti-edit"></i> Edit</button>
                     <button onclick="deleteArticle(${a.id})" class="cc-btn-danger"><i class="ti ti-trash"></i> Hapus</button>

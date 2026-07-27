@@ -1,81 +1,231 @@
 @extends('layouts.app')
 
-@section('title', 'Global Countries — Supply Chain Risk Intelligence')
+@section('title', 'Global Countries — Analytics & Indicators')
 @section('breadcrumb', 'Global Countries')
+
+@section('extra_head')
+<style>
+    .metrics-showcase-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 28px;
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 24px;
+    }
+
+    .metrics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--gray-100);
+        margin-bottom: 24px;
+    }
+
+    .metrics-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .metrics-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .country-select-box {
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1.5px solid var(--gray-300);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        background: #ffffff;
+        outline: none;
+        min-width: 320px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .country-select-box:focus {
+        border-color: var(--violet-500);
+        box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+    }
+
+    /* 5 Indicator Cards Grid */
+    .indicator-5-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 18px;
+    }
+
+    @media (max-width: 1200px) {
+        .indicator-5-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .indicator-5-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+
+    .ind-card {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid var(--gray-200);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 150px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ind-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .ind-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .ind-card-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--gray-500);
+    }
+
+    .ind-card-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+    }
+
+    .ind-card-icon.gdp { background: #f3e8ff; color: #7c3aed; }
+    .ind-card-icon.inflation { background: #fce7f3; color: #db2777; }
+    .ind-card-icon.population { background: #dbeafe; color: #2563eb; }
+    .ind-card-icon.currency { background: #dcfce7; color: #15803d; }
+    .ind-card-icon.weather { background: #e0f2fe; color: #0284c7; }
+
+    .ind-card-val {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin-top: 12px;
+        color: var(--gray-900);
+        line-height: 1.2;
+    }
+
+    .ind-card-subtext {
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        margin-top: 10px;
+        font-weight: 500;
+    }
+</style>
+@endsection
 
 @section('content')
 <div class="dashboard-page">
     <div class="page-header">
-        <h1 class="page-title">Global Country Analytics</h1>
-        <p class="page-subtitle">Country inventory, port distribution, and logistics infrastructure overview</p>
+        <h1 class="page-title"><i class="ti ti-globe" style="color: var(--violet-600);"></i> Global Country Analytics</h1>
+        <p class="page-subtitle">Sistem Informasi Indikator Negara: GDP, Inflasi, Populasi, Mata Uang, & Cuaca Real-time.</p>
     </div>
 
-    <!-- Top Stats -->
-    <div class="stat-grid stagger-children mb-4">
-        <div class="stat-card animate-fade-up">
-            <div class="stat-card-icon violet"><i class="ti ti-globe"></i></div>
-            <p class="stat-card-label">Registered Countries</p>
-            <p class="stat-card-value" id="metric-countries">—</p>
-        </div>
-        <div class="stat-card animate-fade-up">
-            <div class="stat-card-icon success"><i class="ti ti-anchor"></i></div>
-            <p class="stat-card-label">Maritime Port Hubs</p>
-            <p class="stat-card-value" id="metric-ports">—</p>
-        </div>
-        <div class="stat-card animate-fade-up">
-            <div class="stat-card-icon warning"><i class="ti ti-list-search"></i></div>
-            <p class="stat-card-label">Showing</p>
-            <p class="stat-card-value" id="metric-showing">—</p>
-        </div>
-    </div>
-
-    <!-- Chart -->
-    <div class="card-modern animate-fade-up mb-4">
-        <div class="card-header-modern">
-            <span class="card-title-modern"><i class="ti ti-chart-bar"></i> Top 20 Countries by Port Count</span>
-        </div>
-        <div style="position: relative; height: 300px;">
-            <canvas id="portsDistributionChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Search + Table -->
-    <div class="card-modern animate-fade-up">
-        <div class="card-header-modern" style="flex-wrap:wrap; gap:12px;">
-            <span class="card-title-modern"><i class="ti ti-table"></i> Country Inventory (250 Countries)</span>
-            <div style="display:flex; gap:10px; align-items:center; margin-left:auto;">
-                <input type="text" id="countrySearch" placeholder="🔍 Search country..." oninput="filterTable()"
-                    style="padding:6px 14px; border:1px solid var(--gray-200); border-radius:8px; font-size:13px; width:220px; outline:none;">
-                <select id="regionFilter" onchange="filterTable()"
-                    style="padding:6px 12px; border:1px solid var(--gray-200); border-radius:8px; font-size:13px; outline:none;">
-                    <option value="">All Regions</option>
+    <!-- FEATURED 5 INDICATORS SHOWCASE CARD -->
+    <div class="metrics-showcase-card animate-fade-up">
+        <div class="metrics-header">
+            <div class="metrics-title-group">
+                <span class="metrics-title" id="showcaseCountryTitle">
+                    <i class="ti ti-chart-dots" style="color: var(--violet-600);"></i> Indikator Utama Negara
+                </span>
+                <span id="showcaseRegionBadge" class="badge-modern badge-violet" style="font-size: 0.82rem;">Global</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="metricsCountrySelect" style="font-weight: 700; font-size: 0.9rem; color: var(--gray-700);">🔍 Cari / Pilih Negara:</label>
+                <select id="metricsCountrySelect" class="country-select-box" onchange="onMetricsCountrySelectChange()">
+                    <option value="">Memuat daftar negara...</option>
                 </select>
             </div>
         </div>
-        <div style="overflow-x:auto; max-height:520px; overflow-y:auto;">
-            <table class="table-modern" style="width:100%;">
-                <thead style="position:sticky; top:0; z-index:2; background:white;">
-                    <tr>
-                        <th>#</th>
-                        <th onclick="sortTable('name')" style="cursor:pointer;">Country <i class="ti ti-arrows-sort" style="font-size:11px;"></i></th>
-                        <th style="text-align:center;">ISO2</th>
-                        <th style="text-align:center;">ISO3</th>
-                        <th style="text-align:center;">Currency</th>
-                        <th style="text-align:center;">Region</th>
-                        <th onclick="sortTable('ports')" style="text-align:center; cursor:pointer;">Ports <i class="ti ti-arrows-sort" style="font-size:11px;"></i></th>
-                    </tr>
-                </thead>
-                <tbody id="country-table-body">
-                    <tr><td colspan="7" style="text-align:center; padding:32px; color:var(--gray-400);">Loading data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="padding:12px 16px; border-top:1px solid var(--gray-100); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <span id="paginationInfo" style="font-size:13px; color:var(--gray-500);"></span>
-            <div style="display:flex; gap:6px;">
-                <button id="btnPrev" onclick="changePage(-1)" style="padding:5px 14px; border:1px solid var(--gray-200); border-radius:6px; background:white; cursor:pointer; font-size:13px;">&#8249; Prev</button>
-                <span id="pageIndicator" style="padding:5px 14px; font-size:13px; font-weight:600;"></span>
-                <button id="btnNext" onclick="changePage(1)" style="padding:5px 14px; border:1px solid var(--gray-200); border-radius:6px; background:white; cursor:pointer; font-size:13px;">Next &#8250;</button>
+
+        <!-- 5 INDICATOR CARDS -->
+        <div class="indicator-5-grid">
+            <!-- 1. GDP -->
+            <div class="ind-card">
+                <div>
+                    <div class="ind-card-top">
+                        <span class="ind-card-label">GDP / PDB</span>
+                        <div class="ind-card-icon gdp"><i class="ti ti-cash"></i></div>
+                    </div>
+                    <div class="ind-card-val" id="val-gdp" style="color: #7c3aed;">—</div>
+                </div>
+                <div class="ind-card-subtext">Produk Domestik Bruto</div>
+            </div>
+
+            <!-- 2. INFLASI -->
+            <div class="ind-card">
+                <div>
+                    <div class="ind-card-top">
+                        <span class="ind-card-label">Tingkat Inflasi</span>
+                        <div class="ind-card-icon inflation"><i class="ti ti-trending-up"></i></div>
+                    </div>
+                    <div class="ind-card-val" id="val-inflation" style="color: #db2777;">—</div>
+                </div>
+                <div class="ind-card-subtext">Laju Inflasi Tahunan</div>
+            </div>
+
+            <!-- 3. POPULASI -->
+            <div class="ind-card">
+                <div>
+                    <div class="ind-card-top">
+                        <span class="ind-card-label">Populasi</span>
+                        <div class="ind-card-icon population"><i class="ti ti-users"></i></div>
+                    </div>
+                    <div class="ind-card-val" id="val-population" style="color: #2563eb;">—</div>
+                </div>
+                <div class="ind-card-subtext">Total Jumlah Penduduk</div>
+            </div>
+
+            <!-- 4. MATA UANG -->
+            <div class="ind-card">
+                <div>
+                    <div class="ind-card-top">
+                        <span class="ind-card-label">Mata Uang</span>
+                        <div class="ind-card-icon currency"><i class="ti ti-currency-dollar"></i></div>
+                    </div>
+                    <div class="ind-card-val" id="val-currency" style="color: #15803d;">—</div>
+                </div>
+                <div class="ind-card-subtext">Kode & Nama Valuta</div>
+            </div>
+
+            <!-- 5. CUACA SAAT INI -->
+            <div class="ind-card">
+                <div>
+                    <div class="ind-card-top">
+                        <span class="ind-card-label">Cuaca Saat Ini</span>
+                        <div class="ind-card-icon weather"><i class="ti ti-cloud-storm"></i></div>
+                    </div>
+                    <div class="ind-card-val" id="val-weather" style="color: #0284c7;">—</div>
+                </div>
+                <div class="ind-card-subtext" id="val-weather-sub">Kondisi Atmosferik</div>
             </div>
         </div>
     </div>
@@ -85,140 +235,71 @@
 @section('extra_scripts')
 <script>
 var allCountries = [];
-var filtered = [];
-var currentPage = 1;
-var perPage = 25;
-var sortField = 'name';
-var sortAsc = true;
 
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/api/countries-summary')
         .then(function(r) { return r.json(); })
         .then(function(result) {
             if (result.status === 'success') {
-                document.getElementById('metric-countries').innerText = result.summary.total_countries + ' Countries';
-                document.getElementById('metric-ports').innerText = result.summary.total_monitored_ports + ' Hubs';
-
                 allCountries = result.data;
-                filtered = allCountries.slice();
 
-                // Populate region filter
-                var regions = [];
-                allCountries.forEach(function(c) {
-                    if (c.region && regions.indexOf(c.region) === -1) regions.push(c.region);
-                });
-                regions.sort();
-                var sel = document.getElementById('regionFilter');
-                regions.forEach(function(r) {
-                    var opt = document.createElement('option');
-                    opt.value = r;
-                    opt.textContent = r;
-                    sel.appendChild(opt);
-                });
+                // Populate Country Selector Dropdown
+                populateMetricsCountrySelect(allCountries);
 
-                renderTable();
-
-                // Chart: top 20 by ports
-                var top20 = allCountries.slice().sort(function(a,b){return b.ports_count - a.ports_count;}).slice(0, 20);
-                var ctx = document.getElementById('portsDistributionChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: top20.map(function(c){ return c.name; }),
-                        datasets: [{
-                            label: 'Ports',
-                            data: top20.map(function(c){ return c.ports_count; }),
-                            backgroundColor: 'rgba(124,58,237,0.6)',
-                            borderColor: 'rgba(124,58,237,1)',
-                            borderWidth: 1.5,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
-                            x: { ticks: { font: { size: 10 } }, grid: { display: false } }
-                        }
-                    }
-                });
+                // Load default country indicators (Indonesia or first)
+                const defaultCountry = allCountries.find(c => c.name.toLowerCase().includes('indonesia')) || allCountries[0];
+                if (defaultCountry) {
+                    selectCountryForMetrics(defaultCountry.id);
+                }
             }
         })
         .catch(function(e) {
-            console.error(e);
-            document.getElementById('country-table-body').innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;padding:24px;">Failed to load country data.</td></tr>';
+            console.error("❌ Countries Summary API Error:", e);
         });
 });
 
-function filterTable() {
-    var q = document.getElementById('countrySearch').value.toLowerCase();
-    var r = document.getElementById('regionFilter').value;
-    filtered = allCountries.filter(function(c) {
-        var nameMatch = !q || c.name.toLowerCase().indexOf(q) !== -1
-            || (c.iso2 && c.iso2.toLowerCase().indexOf(q) !== -1)
-            || (c.iso3 && c.iso3.toLowerCase().indexOf(q) !== -1)
-            || (c.currency_code && c.currency_code.toLowerCase().indexOf(q) !== -1);
-        var regionMatch = !r || c.region === r;
-        return nameMatch && regionMatch;
-    });
-    currentPage = 1;
-    renderTable();
+function populateMetricsCountrySelect(countries) {
+    const select = document.getElementById('metricsCountrySelect');
+    select.innerHTML = countries.map(c => `<option value="${c.id}">${c.name} (${c.iso2})</option>`).join('');
 }
 
-function sortTable(field) {
-    if (sortField === field) { sortAsc = !sortAsc; } else { sortField = field; sortAsc = true; }
-    filtered.sort(function(a, b) {
-        var va = field === 'ports' ? (a.ports_count || 0) : (a.name || '');
-        var vb = field === 'ports' ? (b.ports_count || 0) : (b.name || '');
-        if (va < vb) return sortAsc ? -1 : 1;
-        if (va > vb) return sortAsc ? 1 : -1;
-        return 0;
-    });
-    renderTable();
+function onMetricsCountrySelectChange() {
+    const id = document.getElementById('metricsCountrySelect').value;
+    if (id) fetchAndRenderCountryMetrics(id);
 }
 
-function changePage(dir) {
-    var total = Math.ceil(filtered.length / perPage);
-    currentPage = Math.max(1, Math.min(total, currentPage + dir));
-    renderTable();
+function selectCountryForMetrics(countryId) {
+    document.getElementById('metricsCountrySelect').value = countryId;
+    fetchAndRenderCountryMetrics(countryId);
 }
 
-function renderTable() {
-    var total = filtered.length;
-    var totalPages = Math.max(1, Math.ceil(total / perPage));
-    var start = (currentPage - 1) * perPage;
-    var end = Math.min(start + perPage, total);
-    var rows = filtered.slice(start, end);
+function fetchAndRenderCountryMetrics(countryId) {
+    fetch(`/api/country-metrics?country_id=${countryId}`)
+        .then(r => r.json())
+        .then(res => {
+            if (res.status === 'success') {
+                const data = res.data;
+                document.getElementById('showcaseCountryTitle').innerHTML = `<i class="ti ti-chart-dots" style="color: var(--violet-600);"></i> ${data.country_name} (${data.iso2})`;
+                document.getElementById('showcaseRegionBadge').innerText = data.region;
 
-    document.getElementById('metric-showing').innerText = total + ' of ' + allCountries.length;
-    document.getElementById('paginationInfo').innerText = 'Showing ' + (start + 1) + ' - ' + end + ' of ' + total + ' countries';
-    document.getElementById('pageIndicator').innerText = 'Page ' + currentPage + ' / ' + totalPages;
-    document.getElementById('btnPrev').disabled = currentPage <= 1;
-    document.getElementById('btnNext').disabled = currentPage >= totalPages;
+                document.getElementById('val-gdp').innerText = data.gdp;
+                document.getElementById('val-inflation').innerText = data.inflation;
+                document.getElementById('val-population').innerText = data.population;
+                document.getElementById('val-currency').innerText = data.currency;
 
-    var html = '';
-    rows.forEach(function(c, i) {
-        var portsBadge = c.ports_count > 0
-            ? '<span style="background:#ede9fe;color:#7c3aed;padding:2px 10px;border-radius:10px;font-weight:700;">' + c.ports_count + '</span>'
-            : '<span style="color:#94a3b8;">0</span>';
-        html += '<tr>'
-            + '<td style="color:var(--gray-400);font-size:12px;">' + (start + i + 1) + '</td>'
-            + '<td style="font-weight:600;color:var(--gray-800);">' + (c.name || '-') + '</td>'
-            + '<td style="text-align:center;color:var(--gray-500);font-size:13px;">' + (c.iso2 || '-') + '</td>'
-            + '<td style="text-align:center;color:var(--gray-500);font-size:13px;">' + (c.iso3 || '-') + '</td>'
-            + '<td style="text-align:center;"><span class="badge-modern badge-violet" style="font-family:monospace;">' + (c.currency_code || '-') + '</span></td>'
-            + '<td style="text-align:center;font-size:12px;color:var(--gray-500);">' + (c.region || '-') + '</td>'
-            + '<td style="text-align:center;">' + portsBadge + '</td>'
-            + '</tr>';
-    });
+                // Weather formatting
+                let weatherEmoji = '☀️';
+                if (data.weather.weather_type === 'rain') weatherEmoji = '🌧️';
+                if (data.weather.weather_type === 'storm') weatherEmoji = '⚡';
+                if (data.weather.weather_type === 'strong_wind') weatherEmoji = '💨';
 
-    if (html === '') {
-        html = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">No countries found matching your search.</td></tr>';
-    }
-
-    document.getElementById('country-table-body').innerHTML = html;
+                document.getElementById('val-weather').innerText = `${weatherEmoji} ${data.weather.condition}`;
+                document.getElementById('val-weather-sub').innerText = `${data.weather.temperature} • Angin ${data.weather.wind_speed}`;
+            }
+        })
+        .catch(err => {
+            console.error("❌ Country Metrics API Error:", err);
+        });
 }
 </script>
 @endsection

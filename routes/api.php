@@ -39,10 +39,16 @@ Route::get('/port-index', [WorldPortIndexController::class, 'getPortDetails']);
 
 // Modul Tahap 3: Fitur Utama Aplikasi
 Route::get('/countries-summary', [GlobalCountryDashboardController::class, 'getApiData']);
+Route::get('/country-metrics', [GlobalCountryDashboardController::class, 'getCountryMetrics']);
 Route::get('/risk-scoring', [RiskScoringController::class, 'getRiskScores']);
 Route::get('/global-weather-status', [GlobalWeatherController::class, 'getWeatherStatus']);
 Route::get('/currency-impact-analysis', [CurrencyImpactController::class, 'getImpactAnalysis']);
+Route::get('/currency-historical', [CurrencyImpactController::class, 'getHistoricalRates']);
+Route::get('/currency-list', [CurrencyImpactController::class, 'getCurrencyList']);
 Route::get('/news-intelligence', [NewsIntelligenceController::class, 'getNewsAnalytics']);
+Route::get('/news-by-category', [NewsIntelligenceController::class, 'getByCategory']);
+Route::get('/news-categories', [NewsIntelligenceController::class, 'getCategories']);
+Route::get('/news-countries', [NewsIntelligenceController::class, 'getCountryList']);
 Route::get('/port-locations', [PortLocationController::class, 'getLocations']);
 Route::get('/port-goods/{port_id}', [GoodsController::class, 'getGoodsByPort']);
 Route::get('/shipping-routes', [ShippingRouteController::class, 'getRoutes']);
